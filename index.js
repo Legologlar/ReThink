@@ -17,7 +17,7 @@ app.get("/points", (req, res) => {
   res.json({ points });
 });
 
-app.post("/add-points", (req, res) => {
+app.get("/add-points", (req, res) => {
   points += 10;
   res.json({ message: "puan eklendi", points });
 });

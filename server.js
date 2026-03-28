@@ -20,21 +20,31 @@ admin.initializeApp({
 app.post('/auth/google', async (req, res) => {
     const { token } = req.body;
     try {
-        // Token'ı Firebase üzerinden doğrula
         const decodedToken = await admin.auth().verifyIdToken(token);
         const { uid, name, email, picture } = decodedToken;
 
-        // Kullanıcıyı veritabanında (Firestore) kontrol et veya oluştur
+        // VERİTABANINA YAZMA KISMI BURASI:
         const userRef = admin.firestore().collection('users').doc(uid);
         const doc = await userRef.get();
 
         if (!doc.exists) {
-            await userRef.set({ name, email, picture, score: 0 });
+            // Yeni kullanıcıyı oluştur ve puanını 0 yap
+            await userRef.set({
+                name: name,
+                email: email,
+                profilePic: picture,
+                score: 0,
+                createdAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+            console.log("Yeni kullanıcı kaydedildi:", name);
+        } else {
+            console.log("Kullanıcı zaten kayıtlı:", name);
         }
 
         res.status(200).send({ message: "Başarılı", user: { name, uid } });
     } catch (error) {
-        res.status(401).send({ message: "Geçersiz Token" });
+        console.error("Backend Hatası:", error);
+        res.status(401).send({ message: "Token doğrulanamadı" });
     }
 });
 

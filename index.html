@@ -16,7 +16,7 @@
             console.log("Token Alındı: " + response.credential);
 
             // Bu token'ı Render.com'daki backend'e gönderiyoruz
-            fetch('https://PROJE-ADIN.onrender.com/auth/google', {
+            fetch('https://rethink-lhse.onrender.com/auth/google', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token: response.credential })
@@ -30,7 +30,7 @@
 
         window.onload = function () {
             google.accounts.id.initialize({
-                client_id: "SENIN_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
+                client_id: "106990880666228440975.apps.googleusercontent.com",
                 callback: handleCredentialResponse
             });
             google.accounts.id.renderButton(

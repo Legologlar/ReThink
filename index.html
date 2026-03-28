@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>ReThink - Giriş</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+    <h1>ReThink Projesine Hoş Geldiniz</h1>
+    
+    <div id="buttonDiv"></div>
+
+    <script>
+        function handleCredentialResponse(response) {
+            // Google'dan gelen "idToken" (response.credential)
+            console.log("Token Alındı: " + response.credential);
+
+            // Bu token'ı Render.com'daki backend'e gönderiyoruz
+            fetch('https://PROJE-ADIN.onrender.com/auth/google', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: response.credential })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert("Giriş Başarılı! Hoş geldin: " + data.user.name);
+            })
+            .catch(err => console.error("Hata:", err));
+        }
+
+        window.onload = function () {
+            google.accounts.id.initialize({
+                client_id: "SENIN_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
+                callback: handleCredentialResponse
+            });
+            google.accounts.id.renderButton(
+                document.getElementById("buttonDiv"),
+                { theme: "outline", size: "large" } 
+            );
+        }
+    </script>
+</body>
+</html>

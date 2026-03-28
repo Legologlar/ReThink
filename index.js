@@ -10,3 +10,14 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Server çalışıyor");
 });
+
+let points = 0;
+
+app.get("/points", (req, res) => {
+  res.json({ points });
+});
+
+app.post("/add-points", (req, res) => {
+  points += 10;
+  res.json({ message: "puan eklendi", points });
+});

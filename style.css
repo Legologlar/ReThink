@@ -93,3 +93,54 @@ body {
     transition: 0.3s; font-size: 1.1rem;
 }
 .cta-btn:hover { background: var(--dark-green); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(46, 204, 113, 0.3); }
+
+/* --- MOBİL UYUMLULUK AYARLARI (768px ve altı) --- */
+@media (max-width: 768px) {
+    .navbar {
+        height: auto;
+        padding: 1rem 3%;
+        flex-wrap: wrap; /* Elemanların sığmadığında alt satıra geçmesini sağlar */
+    }
+
+    .nav-links-container {
+        order: 3; /* Linkleri en alta atar */
+        width: 100%;
+        justify-content: center;
+        margin-left: 0;
+        margin-top: 15px;
+        gap: 1.2rem;
+    }
+
+    .nav-links-container a {
+        font-size: 0.85rem;
+    }
+
+    .auth-section {
+        order: 2; /* Giriş butonunu sağ üstte tutar */
+    }
+
+    .logo {
+        order: 1; /* Logoyu sol üstte tutar */
+        font-size: 1.4rem;
+    }
+
+    /* Hero Bölümü Düzenlemesi */
+    .hero h1 {
+        font-size: 2.5rem; /* Yazıyı mobilde küçültüyoruz */
+        margin-top: 100px;
+    }
+
+    .hero p {
+        font-size: 1rem;
+        padding: 0 10px;
+    }
+
+    /* Giriş Yapıldıysa Profil Alanı */
+    .user-profile {
+        padding: 5px 10px;
+    }
+
+    #user-name {
+        display: none; /* Mobilde yer kaplamasın diye ismi gizleyip sadece fotoyu bırakabiliriz */
+    }
+}

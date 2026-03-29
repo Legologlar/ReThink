@@ -1,6 +1,7 @@
 {
   "name": "rethink-backend",
   "version": "1.0.0",
+  "description": "ReThink projesi backend servisi",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -8,6 +9,7 @@
   "dependencies": {
     "express": "^4.18.2",
     "firebase-admin": "^11.0.0",
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3"
   }
 }

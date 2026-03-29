@@ -1,0 +1,137 @@
+:root {
+    --primary: #4f46e5;
+    --bg-dark: #0f172a;
+    --glass: rgba(255, 255, 255, 0.05);
+    --text-main: #f8fafc;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    overflow-x: hidden;
+}
+
+/* Navbar Stili */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 1rem 5%;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(10px); /* Cam efekti */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 1000;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -1px;
+}
+
+.logo span { color: var(--primary); }
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    transition: 0.3s;
+}
+
+.nav-links a:hover { color: var(--text-main); }
+
+/* Profil ve Dropdown */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    position: relative;
+}
+
+.hidden { display: none !important; }
+
+#user-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 2px solid var(--primary);
+}
+
+.avatar-wrapper { position: relative; }
+
+.dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 50px;
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    width: 160px;
+    padding: 8px 0;
+    display: none; /* Başlangıçta kapalı */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+.avatar-wrapper:hover .dropdown-menu { display: block; }
+
+.dropdown-menu a {
+    display: block;
+    padding: 10px 20px;
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+
+.dropdown-menu a:hover { background: rgba(255, 255, 255, 0.05); color: white; }
+
+/* Hero Bölümü */
+.hero-section {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 0 10%;
+    background: radial-gradient(circle at top right, rgba(79, 70, 229, 0.1), transparent);
+}
+
+.hero-content h1 {
+    font-size: 4rem;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+}
+
+.hero-content span { color: var(--primary); }
+
+.cta-btn {
+    padding: 12px 30px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.cta-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4); }

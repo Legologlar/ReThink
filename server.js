@@ -1,87 +1,67 @@
 const admin = require('firebase-admin');
 const express = require('express');
 const cors = require('cors');
-const dotenv = require('dotenv');
-
-dotenv.config();
+const { OAuth2Client } = require('google-auth-library'); // Yeni kütüphane
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// RENDER ÜZERİNDEKİ ENV VARIABLES KONTROLÜ
-const firebaseConfig = {
+// Firebase Admin Başlatma
+const serviceAccount = {
     projectId: process.env.FIREBASE_PROJECT_ID,
-    privateKey: process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : undefined,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL
 };
 
-if (!firebaseConfig.projectId || !firebaseConfig.privateKey || !firebaseConfig.clientEmail) {
-    console.error("KRİTİK HATA: Render üzerindeki Environment Variables eksik!");
-}
-
 admin.initializeApp({
-    credential: admin.credential.cert(firebaseConfig)
+    credential: admin.credential.cert(serviceAccount)
 });
 
 const db = admin.firestore();
+// Senin o meşhur Client ID'n
+const CLIENT_ID = "893805639538-gu30br0e9vvbgbfvk5g0vv35pe3t1tu9.apps.googleusercontent.com";
+const client = new OAuth2Client(CLIENT_ID);
 
-// GOOGLE AUTH TEST ENDPOINT
 app.post('/auth/google', async (req, res) => {
     const { token } = req.body;
 
-    if (!token) {
-        return res.status(400).send({ message: "Token gönderilmedi!" });
-    }
-
     try {
-        console.log("--- Yeni Giriş Denemesi Başladı ---");
-        
-        // KRİTİK DÜZELTME: checkRevoked: true ekleyerek ve hata yakalayarak ilerliyoruz
-        // Eğer 'aud' hatası verirse, 'rethinkwithrethink' projesine ait olduğunu zorluyoruz
-        const decodedToken = await admin.auth().verifyIdToken(token);
-        
-        const { uid, name, email, picture } = decodedToken;
-        console.log(`Token Doğrulandı: ${name} (${email})`);
+        console.log("--- Hibrit Doğrulama Başladı ---");
 
-        // FIRESTORE KAYIT İŞLEMİ
-        const userRef = db.collection('users').doc(uid);
-        const doc = await userRef.get();
-
-        if (!doc.exists) {
-            await userRef.set({
-                name: name,
-                email: email,
-                profilePic: picture,
-                score: 0,
-                createdAt: admin.firestore.FieldValue.serverTimestamp()
-            });
-            console.log("Veritabanına yeni kullanıcı eklendi!");
-        } else {
-            console.log("Kullanıcı zaten veritabanında mevcut.");
+        // 1. ADIM: Google Kütüphanesi ile Client ID (aud) doğrulaması yapıyoruz
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: CLIENT_ID, 
+        });
+        const payload = ticket.getPayload();
+        
+        // 2. ADIM: Token içindeki Project ID'nin doğru olduğunu kontrol ediyoruz
+        if (payload['aud'] !== CLIENT_ID && payload['iss'] !== 'https://securetoken.google.com/rethinkwithrethink') {
+            throw new Error('Project ID veya Client ID uyuşmazlığı!');
         }
 
-        res.status(200).send({ 
-            message: "Giriş Başarılı", 
-            user: { name, uid, email } 
-        });
+        const uid = payload['sub']; // Google User ID
+        const { name, email, picture } = payload;
+
+        console.log(`Doğrulama Başarılı: ${name}`);
+
+        // 3. ADIM: Firestore Kaydı
+        const userRef = db.collection('users').doc(uid);
+        await userRef.set({
+            name: name,
+            email: email,
+            profilePic: picture,
+            lastLogin: admin.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+
+        res.status(200).send({ message: "Giriş Başarılı!", user: { name, email } });
 
     } catch (error) {
-        console.error("DOĞRULAMA HATASI DETAYI:", error.code, error.message);
-        
-        // Eğer hala 'aud' uyuşmazlığı diyorsa, Firebase Panelindeki ayar eksiktir
-        if (error.code === 'auth/argument-error') {
-            console.error("İPUCU: Firebase Console > Authentication > Google kısmını ENABLE yapmalısın!");
-        }
-
-        res.status(401).send({ 
-            message: "Kimlik doğrulanırken hata oluştu", 
-            details: error.message 
-        });
+        console.error("HATA:", error.message);
+        res.status(401).send({ message: "Doğrulama başarısız", error: error.message });
     }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server ${PORT} portunda canavar gibi çalışıyor!`);
-});
+app.listen(PORT, () => console.log(`Server ${PORT} portunda aktif.`));

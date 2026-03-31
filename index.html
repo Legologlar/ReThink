@@ -4,17 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReThink | Geleceği Geri Dönüştür</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="style.css">
-    
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
 <nav class="navbar">
-    <div class="logo">Re<span>Think</span></div>
+    <div class="logo" onclick="navigateTo('home')" style="cursor:pointer">Re<span>Think</span></div>
     
     <div class="auth-section">
         <div id="buttonDiv"></div>
@@ -31,16 +28,14 @@
         </div>
     </div>
 </nav>
-        
 
+<main class="hero">
+    <h1>Dünyayı <br><span>Yeniden Düşün.</span></h1>
+    <p>Geri dönüşüm bilincini artırmak ve sürdürülebilir bir gelecek inşa etmek için buradayız.</p>
+    <button class="cta-btn">Keşfetmeye Başla</button>
+</main>
 
-    <main class="hero">
-        <h1>Dünyayı <br><span>Yeniden Düşün.</span></h1>
-        <p>Geri dönüşüm bilincini artırmak ve sürdürülebilir bir gelecek inşa etmek için buradayız.</p>
-        <button class="cta-btn">Keşfetmeye Başla</button>
-    </main>
-
-    <div id="account-view" style="display: none; padding-top: 100px; min-height: 100vh; flex-direction: column; align-items: center;">
+<div id="account-view" style="display: none; padding-top: 120px; min-height: 100vh; flex-direction: column; align-items: center; background: var(--light-green);">
     <div class="account-card" style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 90%; max-width: 500px; text-align: center;">
         <h2 style="color: var(--text-dark); margin-bottom: 20px;">Hesap Bilgileri</h2>
         

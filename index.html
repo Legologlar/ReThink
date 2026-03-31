@@ -13,31 +13,26 @@
 </head>
 <body>
 
-    <nav class="navbar">
-        <div class="logo">Re<span>Think</span></div>
-        
-        <div class="dropdown">
-            <a href="#" onclick="navigateTo('account')">Hesap Ayarları</a>
-            <a href="#">Dashboard (İstatistikler)</a>
-            <hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.05); margin: 8px 0;">
-            <a href="#" onclick="logout()" style="color: #e74c3c;">Çıkış Yap</a>
-        </div>
-        
-        <div class="auth-section">
-            <div id="buttonDiv"></div>
+<nav class="navbar">
+    <div class="logo">Re<span>Think</span></div>
+    
+    <div class="auth-section">
+        <div id="buttonDiv"></div>
 
-            <div id="user-profile" class="user-profile hidden">
-                <span id="user-name">Yükleniyor...</span>
-                <img id="user-avatar" src="" alt="Profil">
-                <div class="dropdown">
-                    <a href="#">Hesap Ayarları</a>
-                    <a href="#">Dashboard (İstatistikler)</a>
-                    <hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.05); margin: 8px 0;">
-                    <a href="#" onclick="logout()" style="color: #e74c3c;">Çıkış Yap</a>
-                </div>
+        <div id="user-profile" class="user-profile hidden">
+            <span id="user-name">Yükleniyor...</span>
+            <img id="user-avatar" src="" alt="Profil">
+            <div class="dropdown">
+                <a href="#" onclick="navigateTo('account')">Hesap Ayarları</a>
+                <a href="#">Dashboard (İstatistikler)</a>
+                <hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.05); margin: 8px 0;">
+                <a href="#" onclick="logout()" style="color: #e74c3c;">Çıkış Yap</a>
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
+        
+
 
     <main class="hero">
         <h1>Dünyayı <br><span>Yeniden Düşün.</span></h1>

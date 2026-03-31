@@ -38,11 +38,21 @@
         </div>
     </nav>
 
-    <main class="hero">
+    <main id="home-page" class="hero">
         <h1>Dünyayı <br><span>Yeniden Düşün.</span></h1>
         <p>Geri dönüşüm bilincini artırmak ve sürdürülebilir bir gelecek inşa etmek için buradayız.</p>
         <button class="cta-btn">Keşfetmeye Başla</button>
     </main>
+
+    <section id="account-page" class="hidden" style="padding-top: 120px; display: flex; flex-direction: column; align-items: center; text-align: center;">
+        <div style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 90%; max-width: 500px;">
+            <h2 style="margin-bottom: 20px; color: var(--text-dark);">Hesap Bilgileri</h2>
+            <img id="info-avatar" src="" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary-green); margin-bottom: 15px;">
+            <p style="font-weight: 600; font-size: 1.2rem;" id="info-name">Ad Soyad</p>
+            <p style="color: var(--text-muted); margin-bottom: 25px;" id="info-email">eposta@adresiniz.com</p>
+            <button onclick="showPage('home-page')" class="cta-btn" style="padding: 10px 25px; font-size: 0.9rem;">Ana Sayfaya Dön</button>
+        </div>
+    </section>
 
     <script>
         function handleCredentialResponse(response) {

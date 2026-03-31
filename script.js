@@ -10,18 +10,24 @@ function handleCredentialResponse(response) {
             updateUI(data.user);
         }
     })
-    .catch(err => console.error("Hata:", err));
+    .catch(err => console.error("Backend Hatası:", err));
 }
 
 function updateUI(user) {
-    // Arayüz elemanlarını göster/gizle
-    document.getElementById("buttonDiv").classList.add("hidden");
+    // Google butonunu tamamen yok et
+    const buttonDiv = document.getElementById("buttonDiv");
+    if(buttonDiv) {
+        buttonDiv.style.display = "none";
+        buttonDiv.classList.add("hidden");
+    }
+
+    // Profil alanını aç
     const profile = document.getElementById("user-profile");
     profile.classList.remove("hidden");
-    profile.style.display = "flex"; // CSS'deki hidden çakışmasını önlemek için
+    profile.style.display = "flex";
 
-    // Bilgileri yerleştir
-    document.getElementById("user-name").innerText = user.name;
+    // İsim ve Resim bilgilerini doldur
+    document.getElementById("user-name").innerText = user.name.split(' ')[0];
     const userImg = user.picture || `https://ui-avatars.com/api/?name=${user.name}&background=2ecc71&color=fff`;
     
     document.getElementById("user-avatar").src = userImg;

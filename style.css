@@ -144,3 +144,16 @@ body {
         display: none; /* Mobilde yer kaplamasın diye ismi gizleyip sadece fotoyu bırakabiliriz */
     }
 }
+
+.hidden { display: none !important; }
+
+/* Dashboard'a özel hızlı bir stil */
+.dashboard-content { padding: 120px 5% 40px; max-width: 1200px; margin: 0 auto; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+.stat-card { 
+    background: white; padding: 30px; border-radius: 20px; 
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05); text-align: center;
+    border: 1px solid var(--light-green);
+}
+.stat-card h3 { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px; }
+.stat-card p { font-size: 2rem; font-weight: 700; color: var(--dark-green); }

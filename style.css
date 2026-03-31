@@ -43,17 +43,39 @@ body {
 .nav-links-container a:hover { color: var(--primary-green); }
 
 /* Auth & Profile - Tam Sağda */
-.auth-section { margin-left: auto; /* Tüm boşluğu sol tarafa atar */ display: flex; align-items: center; }
-.hidden { display: none !important; }
-
-/* Kullanıcı Profili */
-.user-profile {
-    display: flex; align-items: center; gap: 12px;
-    padding: 8px 18px; background: var(--bg-white);
-    border-radius: 50px; border: 1px solid rgba(46, 204, 113, 0.2);
-    cursor: pointer; position: relative;
+/* Auth Section Düzenleme */
+.auth-section {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 200px; /* Butonun sığması için alan açar */
 }
 
+/* Google Butonunun etrafındaki boşluğu temizle */
+#buttonDiv {
+    height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+/* Profil alanı gelince butonun üstüne binmesini engelle */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 15px;
+    background: white;
+    border-radius: 50px;
+    border: 1px solid rgba(46, 204, 113, 0.2);
+    cursor: pointer;
+    position: relative;
+    z-index: 1001; /* Üstte kalmasını sağlar */
+}
+
+.user-profile.hidden {
+    display: none !important;
+}
 #user-avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--primary-green); }
 #user-name { font-size: 0.9rem; font-weight: 600; color: var(--text-dark); }
 

@@ -4,56 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReThink | Geleceği Geri Dönüştür</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="style.css">
+    
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
-<nav class="navbar">
-    <div class="logo" onclick="navigateTo('home')" style="cursor:pointer">Re<span>Think</span></div>
-    
-    <div class="auth-section">
-        <div id="buttonDiv"></div>
+    <nav class="navbar">
+        <div class="logo">Re<span>Think</span></div>
+        
+        <ul class="nav-links-container">
+            <li><a href="#">Ana Sayfa</a></li>
+            <li><a href="#">Geri Dönüşüm Rehberi</a></li>
+            <li><a href="#">Harita</a></li>
+        </ul>
+        
+        <div class="auth-section">
+            <div id="buttonDiv"></div>
 
-        <div id="user-profile" class="user-profile hidden">
-            <span id="user-name">Yükleniyor...</span>
-            <img id="user-avatar" src="" alt="Profil">
-            <div class="dropdown">
-                <a href="Hesap" onclick="navigateTo('account')">Hesap Ayarları</a>
-                <a href="#">Dashboard (İstatistikler)</a>
-                <hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.05); margin: 8px 0;">
-                <a href="#" onclick="logout()" style="color: #e74c3c;">Çıkış Yap</a>
+            <div id="user-profile" class="user-profile hidden">
+                <span id="user-name">Yükleniyor...</span>
+                <img id="user-avatar" src="" alt="Profil">
+                <div class="dropdown">
+                    <a href="#">Hesap Ayarları</a>
+                    <a href="#">Dashboard (İstatistikler)</a>
+                    <hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.05); margin: 8px 0;">
+                    <a href="#" onclick="logout()" style="color: #e74c3c;">Çıkış Yap</a>
+                </div>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-<main class="hero">
-    <h1>Dünyayı <br><span>Yeniden Düşün.</span></h1>
-    <p>Geri dönüşüm bilincini artırmak ve sürdürülebilir bir gelecek inşa etmek için buradayız.</p>
-    <button class="cta-btn">Keşfetmeye Başla</button>
-</main>
-
-<div id="account-view" style="display: none; padding-top: 120px; min-height: 100vh; flex-direction: column; align-items: center; background: var(--light-green);">
-    <div class="account-card" style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 90%; max-width: 500px; text-align: center;">
-        <h2 style="color: var(--text-dark); margin-bottom: 20px;">Hesap Bilgileri</h2>
-        
-        <div style="margin-bottom: 25px;">
-            <img id="info-avatar" src="" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary-green); object-fit: cover;">
-        </div>
-
-        <div style="text-align: left; margin-bottom: 30px; padding: 0 20px;">
-            <p style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Ad Soyad</p>
-            <p id="info-name" style="font-weight: 600; font-size: 1.1rem; margin-bottom: 15px; color: var(--text-dark); border-bottom: 1px solid #eee; padding-bottom: 5px;"></p>
-            
-            <p style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">E-posta Adresi</p>
-            <p id="info-email" style="font-weight: 600; font-size: 1.1rem; color: var(--text-dark); border-bottom: 1px solid #eee; padding-bottom: 5px;"></p>
-        </div>
-
-        <button onclick="navigateTo('home')" class="cta-btn" style="padding: 12px 30px; font-size: 0.9rem; background: var(--text-dark);">Ana Sayfaya Dön</button>
-    </div>
-</div>
+    <main class="hero">
+        <h1>Dünyayı <br><span>Yeniden Düşün.</span></h1>
+        <p>Geri dönüşüm bilincini artırmak ve sürdürülebilir bir gelecek inşa etmek için buradayız.</p>
+        <button class="cta-btn">Keşfetmeye Başla</button>
+    </main>
 
 <script src="script.js"></script>
 </body>

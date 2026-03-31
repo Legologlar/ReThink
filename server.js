@@ -1,3 +1,4 @@
+const axios = require('axios');
 const admin = require('firebase-admin');
 const express = require('express');
 const cors = require('cors');
@@ -65,3 +66,20 @@ app.post('/auth/google', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server ${PORT} portunda aktif.`));
+
+ // Eğer axios yüklü değilse: npm install axios
+
+// Kendi URL'ni buraya yaz (Render'daki adresin)
+const URL = "https://rethink-lhse.onrender.com/ping"; 
+
+setInterval(async () => {
+    try {
+        const response = await axios.get(URL);
+        console.log("Kendi kendine ping atıldı, durum:", response.status);
+    } catch (error) {
+        console.error("Self-ping hatası:", error.message);
+    }
+}, 14 * 60 * 1000); // 14 dakikada bir çalışır (14 * 60 saniye * 1000 ms)
+
+// Ping endpoint'ini de eklemeyi unutma
+app.get('/ping', (req, res) => res.send('Yaşıyorum!'));

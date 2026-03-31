@@ -1,6 +1,4 @@
-// script.js içeriği bu şekilde olmalı:
 function handleCredentialResponse(response) {
-    console.log("Token alındı, doğrulanıyor...");
     fetch('https://rethink-lhse.onrender.com/auth/google', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -12,21 +10,22 @@ function handleCredentialResponse(response) {
             updateUI(data.user);
         }
     })
-    .catch(err => console.error("Backend Hatası:", err));
+    .catch(err => console.error("Hata:", err));
 }
 
 function updateUI(user) {
+    // Arayüz elemanlarını göster/gizle
     document.getElementById("buttonDiv").classList.add("hidden");
-    document.getElementById("user-profile").classList.remove("hidden");
+    const profile = document.getElementById("user-profile");
+    profile.classList.remove("hidden");
+    profile.style.display = "flex"; // CSS'deki hidden çakışmasını önlemek için
+
+    // Bilgileri yerleştir
     document.getElementById("user-name").innerText = user.name;
-    
-    const avatarImg = document.getElementById("user-avatar");
-    const infoAvatar = document.getElementById("info-avatar");
     const userImg = user.picture || `https://ui-avatars.com/api/?name=${user.name}&background=2ecc71&color=fff`;
     
-    avatarImg.src = userImg;
-    if(infoAvatar) infoAvatar.src = userImg;
-
+    document.getElementById("user-avatar").src = userImg;
+    document.getElementById("info-avatar").src = userImg;
     document.getElementById("info-name").innerText = user.name;
     document.getElementById("info-email").innerText = user.email;
 }
@@ -36,8 +35,8 @@ function navigateTo(endpoint) {
     const accountView = document.getElementById('account-view');
 
     if (endpoint === 'account') {
-        hero.style.display = 'none'; 
-        accountView.style.display = 'flex'; 
+        hero.style.display = 'none';
+        accountView.style.display = 'flex';
     } else {
         accountView.style.display = 'none';
         hero.style.display = 'flex';

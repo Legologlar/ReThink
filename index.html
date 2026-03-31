@@ -4,78 +4,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReThink | Geleceği Geri Dönüştür</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
-    <div id="view-landing">
-        <nav class="navbar">
-            <div class="logo">Re<span>Think</span></div>
-            <ul class="nav-links-container">
-                <li><a href="#">Ana Sayfa</a></li>
-                <li><a href="#">Geri Dönüşüm Rehberi</a></li>
-                <li><a href="#">Harita</a></li>
-            </ul>
-            <div class="auth-section">
-                <div id="buttonDiv"></div>
-            </div>
-        </nav>
-
-        <main class="hero">
-            <h1>Dünyayı <br><span>Yeniden Düşün.</span></h1>
-            <p>Geri dönüşüm bilincini artırmak ve sürdürülebilir bir gelecek inşa etmek için buradayız.</p>
-            <button class="cta-btn" onclick="showDashboardIfLogged()">Keşfetmeye Başla</button>
-        </main>
-    </div>
-
-    <div id="view-dashboard" class="hidden">
-        <nav class="navbar">
-            <div class="logo">Re<span>Think</span></div>
-            
-            <ul class="nav-links-container">
-                <li><a href="#" onclick="showSection('overview')">İstatistiklerim</a></li>
-                <li><a href="#" onclick="showSection('leaderboard')">Sıralama</a></li>
-            </ul>
-
-            <div class="auth-section">
-                <div class="user-profile">
-                    <span id="user-name-display">Yükleniyor...</span>
-                    <img id="user-avatar-display" src="" alt="Profil">
-                    <div class="dropdown">
-                        <a href="#">Hesap Ayarları</a>
-                        <a href="#" onclick="logout()" style="color: #e74c3c;">Çıkış Yap</a>
-                    </div>
+    <nav class="navbar">
+        <div class="logo">Re<span>Think</span></div>
+        <ul class="nav-links-container">
+            <li><a href="#" onclick="showSection('hero')">Ana Sayfa</a></li>
+            <li><a href="#">Geri Dönüşüm Rehberi</a></li>
+            <li><a href="#">Harita</a></li>
+        </ul>
+        <div class="auth-section">
+            <div id="buttonDiv"></div>
+            <div id="user-profile" class="user-profile hidden">
+                <span id="user-name">Yükleniyor...</span>
+                <img id="user-avatar" src="" alt="Profil">
+                <div class="dropdown">
+                    <a href="#" onclick="showSection('account')">Hesap Ayarları</a>
+                    <a href="#" onclick="showSection('dashboard')">Dashboard</a>
+                    <hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.05); margin: 8px 0;">
+                    <a href="#" onclick="logout()" style="color: #e74c3c;">Çıkış Yap</a>
                 </div>
             </div>
-        </nav>
+        </div>
+    </nav>
 
-        <main class="dashboard-main" style="padding-top: 100px; text-align: center;">
-            <h2 style="margin-bottom: 20px;">Hoş geldin, <span id="welcome-name" style="color: var(--primary-green);"></span>!</h2>
-            <div id="dashboard-content">
-                <p>Burası senin kişisel çevre etki merkezin.</p>
+    <div class="container">
+        <main id="hero" class="content-section">
+            <div class="hero-content">
+                <h1>Dünyayı <br><span>Yeniden Düşün.</span></h1>
+                <p>Geri dönüşüm bilincini artırmak ve sürdürülebilir bir gelecek inşa etmek için buradayız.</p>
+                <button class="cta-btn" onclick="showSection('dashboard')">Keşfetmeye Başla</button>
             </div>
         </main>
+
+        <section id="dashboard" class="content-section hidden">
+            <h1>Dashboard</h1>
+            <div class="stats-grid">
+                <div class="card"><h3>Puan</h3><p>150</p></div>
+                <div class="card"><h3>Atık</h3><p>5 kg</p></div>
+            </div>
+        </section>
+
+        <section id="account" class="content-section hidden">
+            <h1>Hesap Bilgileri</h1>
+            <div class="profile-details card">
+                <p><strong>İsim:</strong> <span id="info-name"></span></p>
+                <p><strong>E-posta:</strong> <span id="info-email"></span></p>
+            </div>
+        </section>
     </div>
 
     <script>
-        // SPA Geçiş Fonksiyonu
-        function switchView(viewName) {
-            if (viewName === 'dashboard') {
-                document.getElementById('view-landing').classList.add('hidden');
-                document.getElementById('view-dashboard').classList.remove('hidden');
-            } else {
-                document.getElementById('view-landing').classList.remove('hidden');
-                document.getElementById('view-dashboard').classList.add('hidden');
-            }
+        // Sayfa Değiştirme Fonksiyonu (SPA)
+        function showSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
         }
 
         function handleCredentialResponse(response) {
-            console.log("Token alındı, doğrulanıyor...");
-
             fetch('https://rethink-lhse.onrender.com/auth/google', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -84,57 +76,39 @@
             .then(res => res.json())
             .then(data => {
                 if(data.user) {
-                    // Veriyi yerel hafızaya kaydet (YouTube mantığı)
-                    localStorage.setItem("rethink_session", JSON.stringify(data.user));
+                    localStorage.setItem("rethink_user", JSON.stringify(data.user));
                     updateUI(data.user);
                 }
-            })
-            .catch(err => console.error("Backend Hatası:", err));
+            });
         }
 
         function updateUI(user) {
-            // Dashboard verilerini doldur
-            document.getElementById("user-name-display").innerText = user.name;
-            document.getElementById("welcome-name").innerText = user.name;
+            document.getElementById("buttonDiv").classList.add("hidden");
+            document.getElementById("user-profile").classList.remove("hidden");
+            document.getElementById("user-name").innerText = user.name;
+            document.getElementById("user-avatar").src = user.picture;
             
-            const avatarImg = document.getElementById("user-avatar-display");
-            const pic = user.picture || `https://ui-avatars.com/api/?name=${user.name}&background=2ecc71&color=fff`;
-            avatarImg.src = pic;
+            // Hesap bilgilerini doldur
+            document.getElementById("info-name").innerText = user.name;
+            document.getElementById("info-email").innerText = user.email;
 
-            // Dashboard görünümüne geç
-            switchView('dashboard');
+            showSection('dashboard');
         }
 
         function logout() {
-            localStorage.removeItem("rethink_session");
-            window.location.reload(); // Temiz bir çıkış için sayfayı yenilemek en iyisidir
-        }
-
-        function showDashboardIfLogged() {
-            const session = localStorage.getItem("rethink_session");
-            if (session) {
-                switchView('dashboard');
-            } else {
-                alert("Lütfen önce giriş yapın!");
-            }
+            localStorage.removeItem("rethink_user");
+            window.location.reload();
         }
 
         window.onload = function () {
-            // Önceki oturum var mı kontrol et (Otomatik giriş)
-            const savedUser = localStorage.getItem("rethink_session");
-            if (savedUser) {
-                updateUI(JSON.parse(savedUser));
-            }
+            const savedUser = localStorage.getItem("rethink_user");
+            if(savedUser) updateUI(JSON.parse(savedUser));
 
             google.accounts.id.initialize({
                 client_id: "893805639538-gu30br0e9vvbgbfvk5g0vv35pe3t1tu9.apps.googleusercontent.com",
                 callback: handleCredentialResponse
             });
-
-            google.accounts.id.renderButton(
-                document.getElementById("buttonDiv"),
-                { theme: "filled_blue", size: "large", shape: "pill", text: "continue_with" } 
-            );
+            google.accounts.id.renderButton(document.getElementById("buttonDiv"), { theme: "filled_blue", size: "large", shape: "pill" });
         }
     </script>
 </body>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hesap Bilgileri | ReThink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">Re<span>Think</span></div>
+        <div class="auth-section">
+            <a href="index.html" class="cta-btn" style="padding: 8px 20px; font-size: 0.9rem;">Ana Sayfa</a>
+        </div>
+    </nav>
+
+    <main class="hero" style="background: var(--light-green);">
+        <div class="account-card" style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 90%; max-width: 500px;">
+            <h2 style="margin-bottom: 25px; color: var(--text-dark);">Profil Bilgileriniz</h2>
+            
+            <div style="margin-bottom: 20px;">
+                <img id="info-avatar" src="https://ui-avatars.com/api/?name=User&background=2ecc71&color=fff" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary-green);">
+            </div>
+
+            <div style="text-align: left; margin-top: 20px;">
+                <div style="margin-bottom: 15px;">
+                    <label style="color: var(--text-muted); font-size: 0.8rem; display: block;">AD SOYAD</label>
+                    <p id="info-name" style="font-weight: 600; font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">Yükleniyor...</p>
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <label style="color: var(--text-muted); font-size: 0.8rem; display: block;">E-POSTA ADRESİ</label>
+                    <p id="info-email" style="font-weight: 600; font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">Yükleniyor...</p>
+                </div>
+            </div>
+
+            <button onclick="history.back()" class="cta-btn" style="width: 100%; margin-top: 10px;">Geri Dön</button>
+        </div>
+    </main>
+
+    <script>
+        // Sayfa yüklendiğinde localStorage'dan verileri çekelim
+        window.onload = function() {
+            const userData = JSON.parse(localStorage.getItem('rethink_user'));
+            if (userData) {
+                document.getElementById('info-name').innerText = userData.name;
+                document.getElementById('info-email').innerText = userData.email;
+                document.getElementById('info-avatar').src = userData.picture;
+            } else {
+                // Eğer veri yoksa ana sayfaya yönlendir
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>

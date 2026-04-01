@@ -42,17 +42,39 @@
 
     <script>
         // Sayfa yüklendiğinde localStorage'dan verileri çekelim
-        window.onload = function() {
-            const userData = JSON.parse(localStorage.getItem('rethink_user'));
-            if (userData) {
-                document.getElementById('info-name').innerText = userData.name;
-                document.getElementById('info-email').innerText = userData.email;
-                document.getElementById('info-avatar').src = userData.picture;
-            } else {
-                // Eğer veri yoksa ana sayfaya yönlendir
-                window.location.href = 'index.html';
-            }
+    window.onload = function() {
+    const savedData = localStorage.getItem('user_data');
+
+    if (savedData) {
+        const user = JSON.parse(savedData);
+        console.log("Hafızadan Okunan Veri:", user); // Fotoğraf burada var mı bak?
+
+        // Metinleri bas
+        document.getElementById('info-name').innerText = user.name || "İsim Yok";
+        document.getElementById('info-email').innerText = user.email || "E-posta Yok";
+        
+        // FOTOĞRAFI ÇEK VE BAS
+        const infoAvatar = document.getElementById('info-avatar');
+        
+        // Google bazen farklı isimlerle gönderir, hepsini deniyoruz
+        const photoUrl = user.picture || user.photo || user.avatar;
+
+        if (photoUrl) {
+            infoAvatar.src = photoUrl;
+            
+            // Eğer URL gelse bile yüklenirken hata verirse yedek devreye girsin
+            infoAvatar.onerror = function() {
+                this.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=2ecc71&color=fff`;
+            };
+        } else {
+            // Eğer veri içinde hiç fotoğraf yoksa direkt yedek oluştur
+            infoAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=2ecc71&color=fff`;
         }
+
+    } else {
+        window.location.href = 'index.html';
+    }
+}
     </script>
 </body>
 </html>

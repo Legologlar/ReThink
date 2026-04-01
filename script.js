@@ -16,41 +16,32 @@ function handleCredentialResponse(response) {
 }
 
 function updateUI(user) {
-    // KONSOL KONTROLÜ: Tarayıcıda F12'ye basıp "Gelen Veri:" satırına bak. 
-    // Orada 'picture' diye bir alan var mı kontrol et.
-    console.log("Gelen Veri:", user);
+    // KONTROL: Konsolda 'picture' alanının dolu olduğundan emin olalım
+    console.log("Kaydedilen Kullanıcı Verisi:", user);
 
+    // Tüm objeyi hafızaya atıyoruz (picture dahil)
+    localStorage.setItem('user_data', JSON.stringify(user));
+
+    // Ana sayfadaki görseli güncelle
     const buttonDiv = document.getElementById("buttonDiv");
     if(buttonDiv) buttonDiv.style.display = "none";
 
     const profile = document.getElementById("user-profile");
-    profile.classList.remove("hidden");
-    profile.style.display = "flex";
+    if(profile) {
+        profile.classList.remove("hidden");
+        profile.style.display = "flex";
+    }
 
-    // İsmi yerleştir
     document.getElementById("user-name").innerText = user.name || "Kullanıcı";
     
-    const avatarImg = document.getElementById("user-avatar");
-
-    // RESİM ALGILAMA MANTIĞI
-    // Google bazen 'picture' bazen 'photo' olarak gönderir. Hepsini kontrol ediyoruz.
-    const googleResmi = user.picture || user.photo || user.avatar;
-
-    if (googleResmi) {
-        avatarImg.src = googleResmi;
-        
-        // Eğer resim yüklenirken hata verirse (algılayamazsa) yedek devreye girsin
-        avatarImg.onerror = function() {
-            this.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=2ecc71&color=fff`;
-        };
-    } else {
-        // Eğer Google'dan hiç resim gelmediyse direkt yedek oluştur
-        avatarImg.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'U')}&background=2ecc71&color=fff`;
-    }
+    // Ana sayfadaki küçük avatar
+    const userImg = user.picture || user.photo || `https://ui-avatars.com/api/?name=${user.name}`;
+    document.getElementById("user-avatar").src = userImg;
 }
 
 function logout() {
-    window.location.reload();
+    localStorage.removeItem('user_data'); // Hafızayı sil
+    window.location.href = 'index.html'; // Ana sayfaya dön
 }
 
 window.onload = function () {

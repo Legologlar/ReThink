@@ -2,13 +2,12 @@ const axios = require('axios');
 const admin = require('firebase-admin');
 const express = require('express');
 const cors = require('cors');
-const { OAuth2Client } = require('google-auth-library'); // Yeni kütüphane
+const { OAuth2Client } = require('google-auth-library');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Firebase Admin Başlatma
 const serviceAccount = {
     projectId: process.env.FIREBASE_PROJECT_ID,
     privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
@@ -20,7 +19,6 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
-// Senin o meşhur Client ID'n
 const CLIENT_ID = "893805639538-gu30br0e9vvbgbfvk5g0vv35pe3t1tu9.apps.googleusercontent.com";
 const client = new OAuth2Client(CLIENT_ID);
 
@@ -30,33 +28,52 @@ app.post('/auth/google', async (req, res) => {
     try {
         console.log("--- Hibrit Doğrulama Başladı ---");
 
-        // 1. ADIM: Google Kütüphanesi ile Client ID (aud) doğrulaması yapıyoruz
         const ticket = await client.verifyIdToken({
             idToken: token,
             audience: CLIENT_ID, 
         });
         const payload = ticket.getPayload();
         
-        // 2. ADIM: Token içindeki Project ID'nin doğru olduğunu kontrol ediyoruz
         if (payload['aud'] !== CLIENT_ID && payload['iss'] !== 'https://securetoken.google.com/rethinkwithrethink') {
             throw new Error('Project ID veya Client ID uyuşmazlığı!');
         }
 
-        const uid = payload['sub']; // Google User ID
+        const uid = payload['sub'];
         const { name, email, picture } = payload;
 
         console.log(`Doğrulama Başarılı: ${name}`);
 
-        // 3. ADIM: Firestore Kaydı
+        // Firestore İşlemleri ve Puan Kontrolü
         const userRef = db.collection('users').doc(uid);
-        await userRef.set({
-            name: name,
-            email: email,
-            profilePic: picture,
-            lastLogin: admin.firestore.FieldValue.serverTimestamp()
-        }, { merge: true });
+        const doc = await userRef.get();
+        
+        let points = 0; // Varsayılan puan
 
-        res.status(200).send({ message: "Giriş Başarılı!", user: { name, email } });
+        if (!doc.exists) {
+            // Yeni kullanıcıyı puanıyla birlikte oluştur
+            await userRef.set({
+                name: name,
+                email: email,
+                profilePic: picture,
+                points: 0, // Element eklendi
+                lastLogin: admin.firestore.FieldValue.serverTimestamp()
+            });
+        } else {
+            // Mevcut kullanıcının puanını çek
+            points = doc.data().points || 0; // Element çekildi
+            await userRef.set({
+                name: name,
+                email: email,
+                profilePic: picture,
+                lastLogin: admin.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+        }
+
+        // Yanıta puanı ve resmi ekle
+        res.status(200).send({ 
+            message: "Giriş Başarılı!", 
+            user: { name, email, picture, points: points } 
+        });
 
     } catch (error) {
         console.error("HATA:", error.message);
@@ -67,9 +84,6 @@ app.post('/auth/google', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server ${PORT} portunda aktif.`));
 
- // Eğer axios yüklü değilse: npm install axios
-
-// Kendi URL'ni buraya yaz (Render'daki adresin)
 const URL = "https://rethink-lhse.onrender.com/ping"; 
 
 setInterval(async () => {
@@ -79,7 +93,6 @@ setInterval(async () => {
     } catch (error) {
         console.error("Self-ping hatası:", error.message);
     }
-}, 14 * 60 * 1000); // 14 dakikada bir çalışır (14 * 60 saniye * 1000 ms)
+}, 14 * 60 * 1000);
 
-// Ping endpoint'ini de eklemeyi unutma
 app.get('/ping', (req, res) => res.send('Yaşıyorum!'));

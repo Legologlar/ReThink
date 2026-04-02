@@ -126,18 +126,21 @@ app.post('/auth/google', async (req, res) => {
 
 app.get("/user/me", authMiddleware, async (req, res) => {
     try {
-        const userId = req.user.id;
+        const userId = req.user.uid;
 
-        const user = await User.findById(userId);
+        const userRef = db.collection("users").doc(userId);
+        const doc = await userRef.get();
 
-        if (!user) {
+        if (!doc.exists) {
             return res.status(404).json({ message: "User not found" });
         }
+
+        const user = doc.data();
 
         res.json({
             name: user.name,
             email: user.email,
-            picture: user.picture,
+            picture: user.profilePic,
             points: user.points || 0
         });
 
@@ -146,7 +149,6 @@ app.get("/user/me", authMiddleware, async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
-
 // KEEP ALIVE
 const URL = process.env.APP_URL;
 

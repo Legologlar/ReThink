@@ -14,6 +14,7 @@ function handleCredentialResponse(response) {
         
             // 🔥 TOKEN BURADA KAYDEDİLİYOR
             localStorage.setItem("token", data.token);
+            Authorization: `Bearer ${localStorage.getItem("token")}`
         
             updateUI(data.user);
         }

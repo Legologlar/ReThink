@@ -60,3 +60,11 @@ window.onload = function () {
         } 
     );
 }
+
+// Sayfa her yüklendiğinde hafızada kullanıcı var mı kontrol et
+window.addEventListener('load', function() {
+    const savedUser = localStorage.getItem('user_data');
+    if (savedUser) {
+        updateUI(JSON.parse(savedUser));
+    }
+});

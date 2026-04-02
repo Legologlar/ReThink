@@ -86,18 +86,3 @@ if (profile) {
     });
 }
 
-function refreshUserFromServer(token) {
-    fetch('https://rethink-lhse.onrender.com/auth/google', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.user) {
-            localStorage.setItem('user_data', JSON.stringify(data.user));
-            updateUI(data.user);
-        }
-    })
-    .catch(err => console.error(err));
-}

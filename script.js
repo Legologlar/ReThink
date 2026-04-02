@@ -8,14 +8,11 @@ function handleCredentialResponse(response) {
     })
     .then(res => res.json())
     .then(data => {
-        if(data.user) {
-            // kullanıcı bilgisi
+        if (data.user) {
+            // Kullanıcıyı kaydet
             localStorage.setItem("user_data", JSON.stringify(data.user));
-        
-            // 🔥 TOKEN BURADA KAYDEDİLİYOR
-            localStorage.setItem("token", data.token);
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-        
+
+            // UI güncelle
             updateUI(data.user);
         }
     })
@@ -23,8 +20,6 @@ function handleCredentialResponse(response) {
 }
 
 function updateUI(user) {
-
-    localStorage.setItem('user_data', JSON.stringify(user));
 
     const buttonDiv = document.getElementById("buttonDiv");
     if (buttonDiv) buttonDiv.style.display = "none";
@@ -39,7 +34,7 @@ function updateUI(user) {
     if (nameEl) nameEl.innerText = user.name || "Kullanıcı";
 
     const userImg = user.picture || user.photo || 
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || "User")}`;
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || "User")}`;
 
     const avatarEl = document.getElementById("user-avatar");
     if (avatarEl) avatarEl.src = userImg;
@@ -74,6 +69,7 @@ window.addEventListener("load", () => {
         } 
     );
 
+    // Local storage varsa direkt UI yükle
     const savedUser = localStorage.getItem('user_data');
 
     if (savedUser) {
@@ -83,21 +79,6 @@ window.addEventListener("load", () => {
             localStorage.removeItem("user_data");
         }
     }
-
-    fetch("https://rethink-lhse.onrender.com/user/me", {
-        method: "GET",
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
-    })
-    .then(res => res.json())
-    .then(user => {
-        if (user) {
-            localStorage.setItem("user_data", JSON.stringify(user));
-            updateUI(user);
-        }
-    })
-    .catch(err => console.error(err));
 });
 
 const profile = document.getElementById("user-profile");
@@ -107,4 +88,3 @@ if (profile) {
         profile.classList.toggle("open");
     });
 }
-

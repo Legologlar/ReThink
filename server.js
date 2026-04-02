@@ -8,9 +8,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Firebase Admin
 const serviceAccount = {
     projectId: process.env.FIREBASE_PROJECT_ID,
-    privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL
 };
 
@@ -19,80 +20,104 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
-const CLIENT_ID = "893805639538-gu30br0e9vvbgbfvk5g0vv35pe3t1tu9.apps.googleusercontent.com";
+
+// Google Client
+const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(CLIENT_ID);
 
+// AUTH ENDPOINT
 app.post('/auth/google', async (req, res) => {
     const { token } = req.body;
 
-    try {
-        console.log("--- Hibrit Doğrulama Başladı ---");
+    if (!token) {
+        return res.status(400).send({ message: "Token eksik" });
+    }
 
+    try {
+        console.log("Auth başladı");
+
+        // 1. TOKEN DOĞRULAMA (Google)
         const ticket = await client.verifyIdToken({
             idToken: token,
-            audience: CLIENT_ID, 
+            audience: CLIENT_ID,
         });
+
         const payload = ticket.getPayload();
-        
-        if (payload['aud'] !== CLIENT_ID && payload['iss'] !== 'https://securetoken.google.com/rethinkwithrethink') {
-            throw new Error('Project ID veya Client ID uyuşmazlığı!');
+
+        // EKSTRA GÜVENLİK
+        if (!payload.email_verified) {
+            throw new Error("Email doğrulanmamış");
         }
 
-        const uid = payload['sub'];
+        const uid = payload.sub;
         const { name, email, picture } = payload;
 
-        console.log(`Doğrulama Başarılı: ${name}`);
-
-        // Firestore İşlemleri ve Puan Kontrolü
         const userRef = db.collection('users').doc(uid);
-        const doc = await userRef.get();
-        
-        let points = 0; // Varsayılan puan
 
-        if (!doc.exists) {
-            // Yeni kullanıcıyı puanıyla birlikte oluştur
-            await userRef.set({
-                name: name,
-                email: email,
-                profilePic: picture,
-                points: 0, // Element eklendi
-                lastLogin: admin.firestore.FieldValue.serverTimestamp()
-            });
-        } else {
-            // Mevcut kullanıcının puanını çek
-            points = doc.data().points || 0; // Element çekildi
-            await userRef.set({
-                name: name,
-                email: email,
-                profilePic: picture,
-                lastLogin: admin.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
-        }
+        // 2. ATOMİK USER OLUŞTURMA / GÜNCELLEME
+        await db.runTransaction(async (transaction) => {
+            const doc = await transaction.get(userRef);
 
-        // Yanıta puanı ve resmi ekle
-        res.status(200).send({ 
-            message: "Giriş Başarılı!", 
-            user: { name, email, picture, points: points } 
+            if (!doc.exists) {
+                // YENİ KULLANICI
+                transaction.set(userRef, {
+                    name,
+                    email,
+                    profilePic: picture,
+                    points: 0,
+                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                    lastLogin: admin.firestore.FieldValue.serverTimestamp()
+                });
+            } else {
+                // MEVCUT KULLANICI
+                transaction.update(userRef, {
+                    name,
+                    email,
+                    profilePic: picture,
+                    lastLogin: admin.firestore.FieldValue.serverTimestamp()
+                });
+            }
+        });
+
+        // 3. POINTS OKUMA (response için)
+        const updatedDoc = await userRef.get();
+        const userData = updatedDoc.data();
+
+        res.status(200).send({
+            message: "Giriş başarılı",
+            user: {
+                uid,
+                name: userData.name,
+                email: userData.email,
+                picture: userData.profilePic,
+                points: userData.points || 0
+            }
         });
 
     } catch (error) {
-        console.error("HATA:", error.message);
-        res.status(401).send({ message: "Doğrulama başarısız", error: error.message });
+        console.error("AUTH HATA:", error.message);
+
+        res.status(401).send({
+            message: "Doğrulama başarısız",
+            error: error.message
+        });
     }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server ${PORT} portunda aktif.`));
-
-const URL = "https://rethink-lhse.onrender.com/ping"; 
+// KEEP ALIVE
+const URL = process.env.APP_URL;
 
 setInterval(async () => {
     try {
-        const response = await axios.get(URL);
-        console.log("Kendi kendine ping atıldı, durum:", response.status);
+        await axios.get(URL + "/ping");
+        console.log("Ping OK");
     } catch (error) {
-        console.error("Self-ping hatası:", error.message);
+        console.error("Ping hata:", error.message);
     }
 }, 14 * 60 * 1000);
 
-app.get('/ping', (req, res) => res.send('Yaşıyorum!'));
+// HEALTH CHECK
+app.get('/ping', (req, res) => res.send('OK'));
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server ${PORT} portunda aktif.`));

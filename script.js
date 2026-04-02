@@ -9,6 +9,12 @@ function handleCredentialResponse(response) {
     .then(res => res.json())
     .then(data => {
         if(data.user) {
+            // kullanıcı bilgisi
+            localStorage.setItem("user_data", JSON.stringify(data.user));
+        
+            // 🔥 TOKEN BURADA KAYDEDİLİYOR
+            localStorage.setItem("token", data.token);
+        
             updateUI(data.user);
         }
     })

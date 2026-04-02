@@ -148,3 +148,7 @@ body {
         width: 160px;
     }
 }
+
+#user-avatar, #info-avatar {
+    object-fit: cover; /* Resmi ezmeden alanı doldurur */
+}

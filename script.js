@@ -76,6 +76,21 @@ window.addEventListener("load", () => {
             localStorage.removeItem("user_data");
         }
     }
+
+    fetch("https://rethink-lhse.onrender.com/user/me", {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+    })
+    .then(res => res.json())
+    .then(user => {
+        if (user) {
+            localStorage.setItem("user_data", JSON.stringify(user));
+            updateUI(user);
+        }
+    })
+    .catch(err => console.error(err));
 });
 
 const profile = document.getElementById("user-profile");

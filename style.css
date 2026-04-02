@@ -152,3 +152,7 @@ body {
 #user-avatar, #info-avatar {
     object-fit: cover; /* Resmi ezmeden alanı doldurur */
 }
+
+.user-profile.open .dropdown {
+    display: block;
+}

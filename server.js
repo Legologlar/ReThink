@@ -97,6 +97,11 @@ app.post('/auth/google', async (req, res) => {
                     lastLogin: admin.firestore.FieldValue.serverTimestamp()
                 });
             }
+            const token = jwt.sign(
+            { uid }, 
+            process.env.JWT_SECRET,
+            { expiresIn: "7d" }
+);
         });
 
         // 3. POINTS OKUMA (response için)

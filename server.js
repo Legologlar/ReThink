@@ -104,6 +104,17 @@ app.post('/auth/google', async (req, res) => {
     }
 });
 
+// KEEP ALIVE
+const URL = process.env.APP_URL;
+
+setInterval(async () => {
+    try {
+        await axios.get(URL + "/ping");
+        console.log("Ping OK");
+    } catch (error) {
+        console.error("Ping hata:", error.message);
+    }
+}, 14 * 60 * 1000);
 
 // HEALTH CHECK
 app.get('/ping', (req, res) => res.send('OK'));

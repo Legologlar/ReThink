@@ -3,25 +3,6 @@ const admin = require('firebase-admin');
 const express = require('express');
 const cors = require('cors');
 const { OAuth2Client } = require('google-auth-library');
-const jwt = require("jsonwebtoken");
-
-function authMiddleware(req, res, next) {
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader) {
-        return res.status(401).json({ message: "Token yok" });
-    }
-
-    const token = authHeader.split(" ")[1];
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-        next();
-    } catch (err) {
-        return res.status(401).json({ message: "Token geçersiz" });
-    }
-}
 
 const app = express();
 app.use(cors());
@@ -55,7 +36,7 @@ app.post('/auth/google', async (req, res) => {
     try {
         console.log("Auth başladı");
 
-        // 1. TOKEN DOĞRULAMA (Google)
+        // Google token doğrulama
         const ticket = await client.verifyIdToken({
             idToken: token,
             audience: CLIENT_ID,
@@ -63,23 +44,20 @@ app.post('/auth/google', async (req, res) => {
 
         const payload = ticket.getPayload();
 
-        // EKSTRA GÜVENLİK
         if (!payload.email_verified) {
             throw new Error("Email doğrulanmamış");
         }
-    
 
         const uid = payload.sub;
         const { name, email, picture } = payload;
 
         const userRef = db.collection('users').doc(uid);
 
-        // 2. ATOMİK USER OLUŞTURMA / GÜNCELLEME
+        // Kullanıcı oluştur / güncelle
         await db.runTransaction(async (transaction) => {
             const doc = await transaction.get(userRef);
 
             if (!doc.exists) {
-                // YENİ KULLANICI
                 transaction.set(userRef, {
                     name,
                     email,
@@ -89,7 +67,6 @@ app.post('/auth/google', async (req, res) => {
                     lastLogin: admin.firestore.FieldValue.serverTimestamp()
                 });
             } else {
-                // MEVCUT KULLANICI
                 transaction.update(userRef, {
                     name,
                     email,
@@ -97,14 +74,9 @@ app.post('/auth/google', async (req, res) => {
                     lastLogin: admin.firestore.FieldValue.serverTimestamp()
                 });
             }
-            const token = jwt.sign(
-            { uid }, 
-            process.env.JWT_SECRET,
-            { expiresIn: "7d" }
-);
         });
 
-        // 3. POINTS OKUMA (response için)
+        // Güncel user verisini çek
         const updatedDoc = await userRef.get();
         const userData = updatedDoc.data();
 
@@ -129,31 +101,6 @@ app.post('/auth/google', async (req, res) => {
     }
 });
 
-app.get("/user/me", authMiddleware, async (req, res) => {
-    try {
-        const userId = req.user.uid;
-
-        const userRef = db.collection("users").doc(userId);
-        const doc = await userRef.get();
-
-        if (!doc.exists) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        const user = doc.data();
-
-        res.json({
-            name: user.name,
-            email: user.email,
-            picture: user.profilePic,
-            points: user.points || 0
-        });
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error" });
-    }
-});
 // KEEP ALIVE
 const URL = process.env.APP_URL;
 

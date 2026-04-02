@@ -3,6 +3,25 @@ const admin = require('firebase-admin');
 const express = require('express');
 const cors = require('cors');
 const { OAuth2Client } = require('google-auth-library');
+const jwt = require("jsonwebtoken");
+
+function authMiddleware(req, res, next) {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+        return res.status(401).json({ message: "Token yok" });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
+        next();
+    } catch (err) {
+        return res.status(401).json({ message: "Token geçersiz" });
+    }
+}
 
 const app = express();
 app.use(cors());
@@ -48,6 +67,7 @@ app.post('/auth/google', async (req, res) => {
         if (!payload.email_verified) {
             throw new Error("Email doğrulanmamış");
         }
+    
 
         const uid = payload.sub;
         const { name, email, picture } = payload;
@@ -101,6 +121,29 @@ app.post('/auth/google', async (req, res) => {
             message: "Doğrulama başarısız",
             error: error.message
         });
+    }
+});
+
+app.get("/user/me", authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json({
+            name: user.name,
+            email: user.email,
+            picture: user.picture,
+            points: user.points || 0
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
     }
 });
 

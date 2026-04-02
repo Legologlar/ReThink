@@ -143,4 +143,8 @@ body {
     #user-name {
         display: none; /* Mobilde yer kaplamasın diye ismi gizleyip sadece fotoyu bırakabiliriz */
     }
+    .dropdown {
+        right: -10px; /* Mobilde biraz daha içeride dursun */
+        width: 160px;
+    }
 }

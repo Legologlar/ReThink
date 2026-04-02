@@ -34,6 +34,10 @@
                     <label style="color: var(--text-muted); font-size: 0.8rem; display: block;">E-POSTA ADRESİ</label>
                     <p id="info-email" style="font-weight: 600; font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">Yükleniyor...</p>
                 </div>
+                <div style="margin-bottom: 25px;">
+                    <label style="color: var(--text-muted); font-size: 0.8rem; display: block;">PUAN</label>
+                    <p id="info-points" style="font-weight: 600; font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">Yükleniyor...</p>
+                </div>
             </div>
 
             <button onclick="history.back()" class="cta-btn" style="width: 100%; margin-top: 10px;">Geri Dön</button>
@@ -52,7 +56,12 @@
         // Metinleri bas
         document.getElementById('info-name').innerText = user.name || "İsim Yok";
         document.getElementById('info-email').innerText = user.email || "E-posta Yok";
-        
+        const pointsEl = document.getElementById('info-points');
+        if (pointsEl) {
+            pointsEl.innerText = (user.points !== undefined && user.points !== null)
+                ? user.points
+                : "0";
+        }
         // FOTOĞRAFI ÇEK VE BAS
         const infoAvatar = document.getElementById('info-avatar');
         

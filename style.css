@@ -156,3 +156,114 @@ body {
 .user-profile.open .dropdown {
     display: block;
 }
+
+/* --- DASHBOARD & LEADERBOARD ÖZEL STİLLERİ --- */
+
+.dashboard-container {
+    width: 90%;
+    max-width: 1000px;
+    margin: 100px auto 50px;
+}
+
+/* Üst Puan Kartı */
+.points-banner {
+    background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+    color: white;
+    padding: 40px;
+    border-radius: 24px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(46, 204, 113, 0.2);
+    margin-bottom: 40px;
+}
+
+.points-banner p {
+    opacity: 0.9;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0;
+}
+
+.points-banner h1 {
+    font-size: 3.5rem;
+    margin: 10px 0;
+    font-weight: 700;
+}
+
+/* Liderlik Tablosu Bölümü */
+.leaderboard-section {
+    background: white;
+    border-radius: 24px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.leaderboard-section h2 {
+    margin-bottom: 25px;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.5rem;
+}
+
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.leaderboard-table tr {
+    border-bottom: 1px solid #f1f1f1;
+    transition: 0.2s;
+}
+
+.leaderboard-table tr:last-child {
+    border-bottom: none;
+}
+
+.leaderboard-table tr:hover {
+    background: var(--light-green);
+}
+
+.leaderboard-table td {
+    padding: 15px;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.rank {
+    width: 60px;
+    font-weight: 700;
+    color: var(--primary-green);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-info img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--light-green);
+}
+
+.points-cell {
+    text-align: right;
+    font-weight: 700;
+    color: var(--dark-green);
+}
+
+/* Sıralama Renkleri */
+.rank-1 { color: #f1c40f !important; }
+.rank-2 { color: #95a5a6 !important; }
+.rank-3 { color: #d35400 !important; }
+
+/* Kendi Satırın İçin Vurgu */
+.user-row-highlight {
+    background: var(--light-green) !important;
+    border-left: 5px solid var(--primary-green);
+}

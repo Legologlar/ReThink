@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | ReThink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">Re<span>Think</span></div>
+        <div class="auth-section">
+            <a href="index.html" class="cta-btn" style="padding: 8px 20px; font-size: 0.8rem; background: transparent; color: var(--text-dark); border: 1px solid #ddd;">Ana Sayfa</a>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="points-banner">
+            <p>Mevcut Bakiyeniz</p>
+            <h1 id="user-total-points">0</h1>
+            <p>Re-Puan</p>
+        </div>
+
+        <div class="leaderboard-section">
+            <h2>🏆 En Çevreci Rethinkçiler</h2>
+            <table class="leaderboard-table">
+                <tbody id="leaderboard-body">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            const savedData = localStorage.getItem('user_data');
+            if (savedData) {
+                const user = JSON.parse(savedData);
+                document.getElementById('user-total-points').innerText = (user.points || 0).toLocaleString();
+
+                // Leaderboard'a kendini ekleme (CSS sınıfını güncelledik)
+                const tbody = document.getElementById('leaderboard-body');
+                tbody.innerHTML += `
+                    <tr class="user-row-highlight">
+                        <td class="rank">Siz</td>
+                        <td class="user-info">
+                            <img src="${user.picture || user.profilePic || 'https://ui-avatars.com/api/?name=' + user.name}">
+                            <span>${user.name} (Siz)</span>
+                        </td>
+                        <td class="points-cell">${user.points || 0} Puan</td>
+                    </tr>
+                `;
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>

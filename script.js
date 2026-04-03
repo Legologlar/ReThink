@@ -88,3 +88,20 @@ if (profile) {
         profile.classList.toggle("open");
     });
 }
+
+function refreshUserPoints() {
+    const user = JSON.parse(localStorage.getItem("user_data"));
+    if (!user) return;
+
+    fetch(`https://rethink-lhse.onrender.com/user/${user.uid}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data) {
+                localStorage.setItem("user_data", JSON.stringify(data));
+                updateUI(data);
+            }
+        })
+        .catch(err => console.error(err));
+}
+
+setInterval(refreshUserPoints, 5000); // 5 saniyede bir günceller

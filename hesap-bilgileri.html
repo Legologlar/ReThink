@@ -16,32 +16,33 @@
     </div>
 </nav>
 
-<main class="hero" style="background: var(--light-green);">
-<div class="account-card">
-    <h2>Profil Bilgileriniz</h2>
+    <main class="hero" style="background: var(--light-green);">
+        <div class="account-card" style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 90%; max-width: 500px;">
+            <h2 style="margin-bottom: 25px; color: var(--text-dark);">Profil Bilgileriniz</h2>
 
-    <div class="avatar-wrapper">
-        <img id="info-avatar">
-    </div>
+            <div style="margin-bottom: 20px;">
+                <img id="info-avatar" src="https://ui-avatars.com/api/?name=User&background=2ecc71&color=fff" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary-green);">
+            </div>
 
-    <div class="info-group">
-        <label>AD SOYAD</label>
-        <p id="info-name">Yükleniyor...</p>
-    </div>
+            <div style="text-align: left; margin-top: 20px;">
+                <div style="margin-bottom: 15px;">
+                    <label style="color: var(--text-muted); font-size: 0.8rem; display: block;">AD SOYAD</label>
+                    <p id="info-name" style="font-weight: 600; font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">Yükleniyor...</p>
+                </div>
 
-    <div class="info-group">
-        <label>E-POSTA ADRESİ</label>
-        <p id="info-email">Yükleniyor...</p>
-    </div>
+                <div style="margin-bottom: 25px;">
+                    <label style="color: var(--text-muted); font-size: 0.8rem; display: block;">E-POSTA ADRESİ</label>
+                    <p id="info-email" style="font-weight: 600; font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">Yükleniyor...</p>
+                </div>
+                <div style="margin-bottom: 25px;">
+                    <label style="color: var(--text-muted); font-size: 0.8rem; display: block;">PUAN</label>
+                    <p id="info-points" style="font-weight: 600; font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">Yükleniyor...</p>
+                </div>
+            </div>
 
-    <div class="info-group">
-        <label>PUAN</label>
-        <p id="info-points">0</p>
-    </div>
-
-    <button onclick="history.back()" class="cta-btn">Geri Dön</button>
-</div>
-</main>
+            <button onclick="history.back()" class="cta-btn" style="width: 100%; margin-top: 10px;">Geri Dön</button>
+        </div>
+    </main>
 
 <script src="script.js"></script>
 

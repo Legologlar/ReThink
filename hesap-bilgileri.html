@@ -45,6 +45,8 @@
         </div>
     </main>
 
+    <script src="script.js"></script>
+    
     <script>
         // Sayfa yüklendiğinde localStorage'dan verileri çekelim
     window.onload = function() {
@@ -85,6 +87,16 @@
         window.location.href = 'index.html';
     }
 }
+            // 🔁 canlı güncelle
+    setInterval(() => {
+        fetch(`https://rethink-lhse.onrender.com/user/${user.uid}`)
+            .then(res => res.json())
+            .then(data => {
+                pointsEl.innerText = data.points ?? 0;
+            });
+    }, 5000);
+
+});
     </script>
 </body>
 </html>

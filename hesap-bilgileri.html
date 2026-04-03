@@ -17,19 +17,30 @@
 </nav>
 
 <main class="hero" style="background: var(--light-green);">
-    <div class="account-card" style="background: white; padding: 40px; border-radius: 20px; width: 90%; max-width: 500px;">
-        <h2>Profil Bilgileriniz</h2>
+div class="account-card">
+    <h2>Profil Bilgileriniz</h2>
 
-        <div style="margin:20px 0;">
-            <img id="info-avatar" style="width:100px;height:100px;border-radius:50%;">
-        </div>
-
-        <p><b>Ad:</b> <span id="info-name"></span></p>
-        <p><b>Email:</b> <span id="info-email"></span></p>
-        <p><b>Puan:</b> <span id="info-points"></span></p>
-
-        <button onclick="history.back()" class="cta-btn">Geri Dön</button>
+    <div class="avatar-wrapper">
+        <img id="info-avatar">
     </div>
+
+    <div class="info-group">
+        <label>AD SOYAD</label>
+        <p id="info-name">Yükleniyor...</p>
+    </div>
+
+    <div class="info-group">
+        <label>E-POSTA ADRESİ</label>
+        <p id="info-email">Yükleniyor...</p>
+    </div>
+
+    <div class="info-group">
+        <label>PUAN</label>
+        <p id="info-points">0</p>
+    </div>
+
+    <button onclick="history.back()" class="cta-btn">Geri Dön</button>
+</div>
 </main>
 
 <script src="script.js"></script>

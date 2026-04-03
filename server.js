@@ -101,6 +101,30 @@ app.post('/auth/google', async (req, res) => {
     }
 });
 
+app.get("/user/:uid", async (req, res) => {
+    try {
+        const userRef = db.collection("users").doc(req.params.uid);
+        const doc = await userRef.get();
+
+        if (!doc.exists) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const user = doc.data();
+
+        res.json({
+            uid: req.params.uid,
+            name: user.name,
+            email: user.email,
+            picture: user.profilePic,
+            points: user.points || 0
+        });
+
+    } catch (err) {
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
 // KEEP ALIVE
 const URL = process.env.APP_URL;
 

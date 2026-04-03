@@ -9,94 +9,81 @@
 </head>
 <body>
 
-    <nav class="navbar">
-        <div class="logo">Re<span>Think</span></div>
-        <div class="auth-section">
-            <a href="index.html" class="cta-btn" style="padding: 8px 20px; font-size: 0.9rem;">Ana Sayfa</a>
+<nav class="navbar">
+    <div class="logo">Re<span>Think</span></div>
+    <div class="auth-section">
+        <a href="index.html" class="cta-btn" style="padding: 8px 20px; font-size: 0.9rem;">Ana Sayfa</a>
+    </div>
+</nav>
+
+<main class="hero" style="background: var(--light-green);">
+    <div class="account-card" style="background: white; padding: 40px; border-radius: 20px; width: 90%; max-width: 500px;">
+        <h2>Profil Bilgileriniz</h2>
+
+        <div style="margin:20px 0;">
+            <img id="info-avatar" style="width:100px;height:100px;border-radius:50%;">
         </div>
-    </nav>
 
-    <main class="hero" style="background: var(--light-green);">
-        <div class="account-card" style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 90%; max-width: 500px;">
-            <h2 style="margin-bottom: 25px; color: var(--text-dark);">Profil Bilgileriniz</h2>
-            
-            <div style="margin-bottom: 20px;">
-                <img id="info-avatar" src="https://ui-avatars.com/api/?name=User&background=2ecc71&color=fff" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary-green);">
-            </div>
+        <p><b>Ad:</b> <span id="info-name"></span></p>
+        <p><b>Email:</b> <span id="info-email"></span></p>
+        <p><b>Puan:</b> <span id="info-points"></span></p>
 
-            <div style="text-align: left; margin-top: 20px;">
-                <div style="margin-bottom: 15px;">
-                    <label style="color: var(--text-muted); font-size: 0.8rem; display: block;">AD SOYAD</label>
-                    <p id="info-name" style="font-weight: 600; font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">Yükleniyor...</p>
-                </div>
+        <button onclick="history.back()" class="cta-btn">Geri Dön</button>
+    </div>
+</main>
 
-                <div style="margin-bottom: 25px;">
-                    <label style="color: var(--text-muted); font-size: 0.8rem; display: block;">E-POSTA ADRESİ</label>
-                    <p id="info-email" style="font-weight: 600; font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">Yükleniyor...</p>
-                </div>
-                
-                <div style="margin-bottom: 25px;">
-                    <label style="color: var(--text-muted); font-size: 0.8rem; display: block;">PUAN</label>
-                    <p id="info-points" style="font-weight: 600; font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">Yükleniyor...</p>
-                </div>
-            </div>
+<script src="script.js"></script>
 
-            <button onclick="history.back()" class="cta-btn" style="width: 100%; margin-top: 10px;">Geri Dön</button>
-        </div>
-    </main>
+<script>
+window.addEventListener("load", () => {
 
-    <script src="script.js"></script>
-    
-    <script>
-        // Sayfa yüklendiğinde localStorage'dan verileri çekelim
-    window.onload = function() {
-    const savedData = localStorage.getItem('user_data');
+    let user = JSON.parse(localStorage.getItem("user_data"));
 
-    if (savedData) {
-        const user = JSON.parse(savedData);
-        console.log("Hafızadan Okunan Veri:", user); // Fotoğraf burada var mı bak?
-
-        // Metinleri bas
-        document.getElementById('info-name').innerText = user.name || "İsim Yok";
-        document.getElementById('info-email').innerText = user.email || "E-posta Yok";
-        const pointsEl = document.getElementById('info-points');
-        if (pointsEl) {
-            pointsEl.innerText = (user.points !== undefined && user.points !== null)
-                ? user.points
-                : "0";
-        }
-        // FOTOĞRAFI ÇEK VE BAS
-        const infoAvatar = document.getElementById('info-avatar');
-        
-        // Google bazen farklı isimlerle gönderir, hepsini deniyoruz
-        const photoUrl = user.picture || user.photo || user.avatar;
-
-        if (photoUrl) {
-            infoAvatar.src = photoUrl;
-            
-            // Eğer URL gelse bile yüklenirken hata verirse yedek devreye girsin
-            infoAvatar.onerror = function() {
-                this.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=2ecc71&color=fff`;
-            };
-        } else {
-            // Eğer veri içinde hiç fotoğraf yoksa direkt yedek oluştur
-            infoAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=2ecc71&color=fff`;
-        }
-
-    } else {
-        window.location.href = 'index.html';
+    if (!user) {
+        window.location.href = "index.html";
+        return;
     }
-}
-            // 🔁 canlı güncelle
-    setInterval(() => {
+
+    const nameEl = document.getElementById("info-name");
+    const emailEl = document.getElementById("info-email");
+    const pointsEl = document.getElementById("info-points");
+    const avatarEl = document.getElementById("info-avatar");
+
+    function render(u) {
+        nameEl.innerText = u.name || "Yok";
+        emailEl.innerText = u.email || "Yok";
+        pointsEl.innerText = u.points ?? 0;
+
+        avatarEl.src = u.picture || 
+            `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}`;
+    }
+
+    // İlk yükleme (local)
+    render(user);
+
+    // Backend’den çek
+    function fetchUser() {
         fetch(`https://rethink-lhse.onrender.com/user/${user.uid}`)
             .then(res => res.json())
             .then(data => {
-                pointsEl.innerText = data.points ?? 0;
-            });
-    }, 5000);
+                if (!data) return;
+
+                user = data;
+
+                localStorage.setItem("user_data", JSON.stringify(data));
+                render(data);
+            })
+            .catch(err => console.error("Fetch hata:", err));
+    }
+
+    // İlk fetch
+    fetchUser();
+
+    // 🔁 Her 5 saniye güncelle
+    setInterval(fetchUser, 5000);
 
 });
-    </script>
+</script>
+
 </body>
 </html>

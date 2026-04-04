@@ -125,6 +125,35 @@ app.get("/user/:uid", async (req, res) => {
     }
 });
 
+app.get("/leaderboard", async (req, res) => {
+    try {
+        const limit = parseInt(req.query.limit) || 10;
+
+        const snapshot = await db
+            .collection("users")
+            .orderBy("points", "desc")
+            .limit(limit)
+            .get();
+
+        const users = [];
+
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            users.push({
+                name: data.name,
+                picture: data.profilePic,
+                points: data.points || 0
+            });
+        });
+
+        res.json(users);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Leaderboard error" });
+    }
+});
+
 // KEEP ALIVE
 const URL = process.env.APP_URL;
 

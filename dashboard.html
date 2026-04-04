@@ -33,28 +33,49 @@
     </div>
 
     <script>
-        window.onload = function() {
-            const savedData = localStorage.getItem('user_data');
-            if (savedData) {
-                const user = JSON.parse(savedData);
-                document.getElementById('user-total-points').innerText = (user.points || 0).toLocaleString();
+window.onload = async function() {
 
-                // Leaderboard'a kendini ekleme (CSS sınıfını güncelledik)
-                const tbody = document.getElementById('leaderboard-body');
-                tbody.innerHTML += `
-                    <tr class="user-row-highlight">
-                        <td class="rank">Siz</td>
-                        <td class="user-info">
-                            <img src="${user.picture || user.profilePic || 'https://ui-avatars.com/api/?name=' + user.name}">
-                            <span>${user.name} (Siz)</span>
-                        </td>
-                        <td class="points-cell">${user.points || 0} Puan</td>
-                    </tr>
-                `;
-            } else {
-                window.location.href = 'index.html';
-            }
-        }
-    </script>
-</body>
+    const savedData = localStorage.getItem('user_data');
+
+    if (!savedData) {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    const user = JSON.parse(savedData);
+
+    // ✅ KENDİ PUANINI GÖSTER
+    document.getElementById('user-total-points').innerText =
+        (user.points || 0).toLocaleString();
+
+    const tbody = document.getElementById('leaderboard-body');
+
+    try {
+        // ✅ BACKEND'DEN TÜM USERLARI ÇEK
+        const res = await fetch("https://rethink-lhse.onrender.com/leaderboard?limit=10");
+        const users = await res.json();
+
+        tbody.innerHTML = "";
+
+        users.forEach((u, index) => {
+
+            const isMe = u.name === user.name;
+
+            tbody.innerHTML += `
+                <tr class="${isMe ? 'user-row-highlight' : ''}">
+                    <td class="rank">#${index + 1}</td>
+                    <td class="user-info">
+                        <img src="${u.picture || 'https://ui-avatars.com/api/?name=' + u.name}">
+                        <span>${u.name} ${isMe ? '(Siz)' : ''}</span>
+                    </td>
+                    <td class="points-cell">${u.points} Puan</td>
+                </tr>
+            `;
+        });
+
+    } catch (err) {
+        console.error("Leaderboard alınamadı:", err);
+    }
+}
+</script>
 </html>

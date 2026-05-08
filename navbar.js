@@ -13,7 +13,7 @@ function loadNavbar() {
         <div class="auth-section">
             <div id="buttonDiv"></div>
 
-            <div id="user-profile" class="user-profile hidden">
+            <div id="user-profile" class="user-profile">
                 <span id="user-name">Yükleniyor...</span>
                 <img id="user-avatar" src="" alt="Profil">
                 <div class="dropdown">

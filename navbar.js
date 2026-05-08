@@ -31,5 +31,21 @@ function loadNavbar() {
     document.body.insertAdjacentHTML('afterbegin', navbarTemplate);
 }
 
+// --- DROPDOWN MANTIĞI BURADA ---
+    const avatar = document.getElementById('user-avatar');
+    const dropdown = document.getElementById('nav-dropdown');
+
+    if (avatar && dropdown) {
+        avatar.addEventListener('click', function(e) {
+            e.stopPropagation(); // Tıklamanın dışarı taşmasını engelle
+            dropdown.classList.toggle('active'); // 'active' class'ını aç/kapat
+        });
+
+        // Sayfada başka bir yere tıklandığında menüyü kapat
+        document.addEventListener('click', function() {
+            dropdown.classList.remove('active');
+        });
+    }
+
 // Sayfa yüklendiğinde fonksiyonu çalıştır
 loadNavbar();

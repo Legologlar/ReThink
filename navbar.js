@@ -1,9 +1,5 @@
+// Sitenin üst kısmında yer alan navbar şablonunu yükleyen fonksiyon
 function loadNavbar() {
-    // Sitenin giriş durumu kontrolü (Backend entegrasyonuna kadar localStorage ile simüle edilir)
-    const isLoggedIn = localStorage.getItem('rethink_logged_in') === 'true';
-    const userName = localStorage.getItem('rethink_user_name') || "Normal Kullanıcı";
-    const userAvatar = localStorage.getItem('rethink_user_avatar') || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop";
-
     const navbarTemplate = `
     <nav class="navbar">
         <div class="logo">Re<span>Think</span></div>
@@ -15,17 +11,17 @@ function loadNavbar() {
         </ul>
         
         <div class="auth-section">
-            <!-- Google Giriş Yerine Eklenen Standart Giriş Yap Butonu -->
-            <button id="btn-login" class="btn-login" onclick="login()" style="display: ${isLoggedIn ? 'none' : 'block'};">
+            <!-- Yenilenen 'Giriş Yap' Butonu (Tıklayınca doğrudan giris.html sayfasına yönlendirir) -->
+            <button id="btn-login" onclick="window.location.href='giris.html'" class="btn-login" style="cursor: pointer;">
                 Giriş Yap
             </button>
 
-            <!-- Giriş Yapan Kullanıcının Profili (Giriş yapılmadıysa gizlenir) -->
-            <div id="user-profile" class="user-profile" style="display: ${isLoggedIn ? 'flex' : 'none'};">
-                <span id="user-name">${userName}</span>
-                <img id="user-avatar" src="${userAvatar}" alt="Profil" style="cursor: pointer;">
+            <!-- Profil Bölümü (Sadece kullanıcı giriş yaptığında görüntülenecektir) -->
+            <div id="user-profile" class="user-profile" style="display: none;">
+                <span id="user-name">Normal Kullanıcı</span>
+                <img id="user-avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop" alt="Profil" style="cursor: pointer;">
                 
-                <!-- JS'deki id ile eşleşmesi için id="nav-dropdown" eklendi -->
+                <!-- Orijinal JS seçicisiyle tam uyum için id="nav-dropdown" eklendi -->
                 <div id="nav-dropdown" class="dropdown">
                     <a href="hesap-ayarlari">Hesap Ayarları</a>
                     <a href="dashboard">Dashboard (İstatistikler)</a>
@@ -40,8 +36,27 @@ function loadNavbar() {
     // Sayfanın en başına navbar'ı yerleştir
     document.body.insertAdjacentHTML('afterbegin', navbarTemplate);
 
-    // --- DROPDOWN VE GİRİŞ ETKİLEŞİM MANTIĞI ---
-    // Elemanlar DOM'a eklendikten sonra seçici işlemleri güvenle çalıştırılır
+    // Kullanıcının oturum açıp açmadığını denetle (Backend/Simülasyon entegrasyonu)
+    const isLoggedIn = localStorage.getItem('rethink_logged_in') === 'true';
+    const loginBtn = document.getElementById('btn-login');
+    const userProfile = document.getElementById('user-profile');
+
+    if (isLoggedIn) {
+        // Kullanıcı giriş yaptıysa: Giriş butonunu gizle, Profil panelini göster
+        if (loginBtn) loginBtn.style.display = 'none';
+        if (userProfile) userProfile.style.display = 'flex';
+    } else {
+        // Kullanıcı giriş yapmadıysa: Profil panelini gizle, Giriş butonunu göster
+        if (loginBtn) loginBtn.style.display = 'block';
+        if (userProfile) userProfile.style.display = 'none';
+    }
+
+    // Elemanlar DOM'a yazıldıktan sonra dropdown tetikleyicilerini kur
+    setupDropdownLogic();
+}
+
+// Dropdown menüyü kontrol eden tıklama mantığı
+function setupDropdownLogic() {
     const avatar = document.getElementById('user-avatar');
     const dropdown = document.getElementById('nav-dropdown');
 
@@ -58,21 +73,12 @@ function loadNavbar() {
     }
 }
 
-// Simüle edilmiş Giriş Yapma fonksiyonu (Backend tarafını bağlarken burayı düzenleyebilirsin)
-function login() {
-    localStorage.setItem('rethink_logged_in', 'true');
-    localStorage.setItem('rethink_user_name', 'Normal Kullanıcı');
-    // Sayfayı yenileyerek yeni durumu yansıtıyoruz
-    location.reload();
-}
-
 // Çıkış yapma fonksiyonu
 function logout(e) {
     if (e) e.preventDefault();
     localStorage.removeItem('rethink_logged_in');
-    localStorage.removeItem('rethink_user_name');
-    location.reload();
+    location.reload(); // Oturumu temizleyip sayfayı yeniler
 }
 
-// Sayfa yüklendiğinde fonksiyonu çalıştır
+// Sayfa yüklendiğinde navbar'ı başlat
 document.addEventListener('DOMContentLoaded', loadNavbar);

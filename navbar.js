@@ -1,4 +1,4 @@
-// Sitenin üst kısmında yer alan navbar şablonunu yükleyen fonksiyon
+// navbar.js
 function loadNavbar() {
     const navbarTemplate = `
     <nav class="navbar">
@@ -11,22 +11,16 @@ function loadNavbar() {
         </ul>
         
         <div class="auth-section">
-            <!-- Yenilenen 'Giriş Yap' Butonu (Tıklayınca doğrudan giris.html sayfasına yönlendirir) -->
-            <button id="btn-login" onclick="window.location.href='giris.html'" class="btn-login" style="cursor: pointer; display: none;">
-                Giriş Yap
-            </button>
+            <button id="btn-login" class="btn-login" onclick="login()">Giriş Yap</button>
 
-            <!-- Profil Bölümü (Sadece kullanıcı giriş yaptığında gerçek bilgileriyle görüntülenecektir) -->
-            <div id="user-profile" class="user-profile" style="display: none;">
+            <div id="user-profile" class="user-profile hidden">
                 <span id="user-name">Yükleniyor...</span>
-                <img id="user-avatar" src="" alt="Profil" style="cursor: pointer;">
-                
-                <!-- Dropdown Menü -->
-                <div id="nav-dropdown" class="dropdown">
+                <img id="user-avatar" src="" alt="Profil">
+                <div class="dropdown" id="nav-dropdown">
                     <a href="hesap-ayarlari">Hesap Ayarları</a>
                     <a href="dashboard">Dashboard (İstatistikler)</a>
                     <hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.05); margin: 8px 0;">
-                    <a href="#" onclick="logout(event)" style="color: #e74c3c;">Çıkış Yap</a>
+                    <a href="#" onclick="logout()" style="color: #e74c3c;">Çıkış Yap</a>
                 </div>
             </div>
         </div>
@@ -36,58 +30,67 @@ function loadNavbar() {
     // Sayfanın en başına navbar'ı yerleştir
     document.body.insertAdjacentHTML('afterbegin', navbarTemplate);
 
-    // Kullanıcının oturum açıp açmadığını ve gerçek kullanıcı verilerini denetle
-    const isLoggedIn = localStorage.getItem('rethink_logged_in') === 'true';
-    const userData = JSON.parse(localStorage.getItem('rethink_user')); // Backend'in kaydettiği kullanıcı nesnesi
-
-    const loginBtn = document.getElementById('btn-login');
-    const userProfile = document.getElementById('user-profile');
-    const userName = document.getElementById('user-name');
-    const userAvatar = document.getElementById('user-avatar');
-
-    if (isLoggedIn && userData) {
-        // Kullanıcı giriş yaptıysa: Giriş butonunu gizle, Profil panelini göster ve bilgileri doğrudan yaz
-        if (loginBtn) loginBtn.style.display = 'none';
-        if (userProfile) userProfile.style.display = 'flex';
-        
-        // Backend'den gelen gerçek kullanıcı adı ve profil resmini doğrudan yerleştiriyoruz
-        if (userName) userName.textContent = userData.name || "Kullanıcı";
-        if (userAvatar) userAvatar.src = userData.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop";
-    } else {
-        // Kullanıcı giriş yapmadıysa veya veri yoksa: Profil panelini gizle, Giriş butonunu göster
-        if (loginBtn) loginBtn.style.display = 'block';
-        if (userProfile) userProfile.style.display = 'none';
-    }
-
-    // Elemanlar DOM'a yazıldıktan sonra dropdown tetikleyicilerini kur
+    // Navbar HTML'e yazıldıktan sonra dropdown ve durum kontrollerini çalıştır
+    checkLoginStatus();
     setupDropdownLogic();
 }
 
-// Dropdown menüyü kontrol eden tıklama mantığı
-function setupDropdownLogic() {
-    const avatar = document.getElementById('user-avatar');
-    const dropdown = document.getElementById('nav-dropdown');
+// --- GİRİŞ YAPMA YÖNLENDİRMESİ ---
+function login() {
+    window.location.href = 'giris.html';
+}
 
-    if (avatar && dropdown) {
-        avatar.addEventListener('click', function(e) {
+// --- OTURUM DURUMU KONTROLÜ ---
+function checkLoginStatus() {
+    const loginBtn = document.getElementById('btn-login');
+    const userProfile = document.getElementById('user-profile');
+    
+    // Backend oturum açtığında localstorage'a 'rethink_user' objesini yazmalı
+    // Örnek: localStorage.setItem('rethink_user', JSON.stringify({ name: 'Ahmet', avatar: 'profil.png' }));
+    const savedUser = localStorage.getItem('rethink_user');
+
+    if (savedUser) {
+        try {
+            const userData = JSON.parse(savedUser);
+            
+            // Elemanları doldur ve görünürlüğü değiştir
+            document.getElementById('user-name').textContent = userData.name;
+            document.getElementById('user-avatar').src = userData.avatar;
+            
+            loginBtn.classList.add('hidden');
+            userProfile.classList.remove('hidden');
+        } catch (e) {
+            console.error("Kullanıcı verisi ayrıştırılamadı:", e);
+        }
+    } else {
+        // Giriş yapılmadıysa varsayılan görünüm
+        loginBtn.classList.remove('hidden');
+        userProfile.classList.add('hidden');
+    }
+}
+
+// --- DROPDOWN MANTIĞI (style.css ".open" sınıfı ile tam uyumlu) ---
+function setupDropdownLogic() {
+    const profileArea = document.getElementById('user-profile');
+
+    if (profileArea) {
+        profileArea.addEventListener('click', function(e) {
             e.stopPropagation(); // Tıklamanın dışarı taşmasını engelle
-            dropdown.classList.toggle('active'); // 'active' class'ını aç/kapat
+            this.classList.toggle('open'); // style.css dosyanızdaki .user-profile.open kuralını tetikler
         });
 
         // Sayfada başka bir yere tıklandığında menüyü kapat
         document.addEventListener('click', function() {
-            dropdown.classList.remove('active');
+            profileArea.classList.remove('open');
         });
     }
 }
 
-// Çıkış yapma fonksiyonu
-function logout(e) {
-    if (e) e.preventDefault();
-    localStorage.removeItem('rethink_logged_in');
-    localStorage.removeItem('rethink_user'); // Kullanıcı bilgilerini de temizle
-    location.reload(); // Oturumu temizleyip sayfayı yeniler
+// Çıkış Yapma Fonksiyonu
+function logout() {
+    localStorage.removeItem('rethink_user');
+    window.location.reload(); // Sayfayı yenileyerek navbar durumunu sıfırla
 }
 
-// Sayfa yüklendiğinde navbar'ı başlat
-document.addEventListener('DOMContentLoaded', loadNavbar);
+// Sayfa yüklendiğinde fonksiyonu çalıştır
+loadNavbar();

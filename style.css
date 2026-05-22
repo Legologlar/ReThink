@@ -267,3 +267,30 @@ body {
     background: var(--light-green) !important;
     border-left: 5px solid var(--primary-green);
 }
+
+/* --- GİRİŞ YAP BUTONU STİLLERİ --- */
+.btn-login {
+    background-color: var(--primary-green);
+    color: var(--bg-white);
+    padding: 10px 24px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 50px; /* Sitedeki profil kartı ve CTA butonları ile uyumlu oval yapı */
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(46, 204, 113, 0.2);
+    transition: all 0.3s ease; /* Yumuşak geçiş animasyonu */
+}
+
+/* Butonun üzerine gelindiğinde (Hover durumu) */
+.btn-login:hover {
+    background-color: var(--dark-green);
+    transform: translateY(-2px); /* Hafif yukarı kalkma efekti */
+    box-shadow: 0 6px 15px rgba(39, 174, 96, 0.3);
+}
+
+/* Butona tıklandığı an (Active durumu) */
+.btn-login:active {
+    transform: translateY(0); /* Tıklanınca eski konumuna geri oturur */
+    box-shadow: 0 2px 5px rgba(39, 174, 96, 0.2);
+}

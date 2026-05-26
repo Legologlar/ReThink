@@ -1,4 +1,5 @@
 // navbar.js
+
 function loadNavbar() {
     const navbarTemplate = `
     <nav class="navbar">
@@ -20,7 +21,7 @@ function loadNavbar() {
                     <a href="hesap-ayarlari">Hesap Ayarları</a>
                     <a href="dashboard">Dashboard (İstatistikler)</a>
                     <hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.05); margin: 8px 0;">
-                    <a href="#" onclick="logout()" style="color: #e74c3c;">Çıkış Yap</a>
+                    <a href="#" onclick="logout(event)" style="color: #e74c3c;">Çıkış Yap</a>
                 </div>
             </div>
         </div>
@@ -30,7 +31,7 @@ function loadNavbar() {
     // Sayfanın en başına navbar'ı yerleştir
     document.body.insertAdjacentHTML('afterbegin', navbarTemplate);
 
-    // Navbar HTML'e yazıldıktan sonra dropdown ve durum kontrollerini çalıştır
+    // Navbar HTML'e yazıldıktan sonra asenkron durum kontrolünü ve dropdown mantığını çalıştır
     checkLoginStatus();
     setupDropdownLogic();
 }
@@ -40,36 +41,37 @@ function login() {
     window.location.href = 'giris.html';
 }
 
-// --- OTURUM DURUMU KONTROLÜ ---
-function checkLoginStatus() {
+// --- OTURUM DURUMU KONTROLÜ (Görsel yapı korunarak Asenkron yapıldı) ---
+async function checkLoginStatus() {
     const loginBtn = document.getElementById('btn-login');
     const userProfile = document.getElementById('user-profile');
     
-    // Backend oturum açtığında localstorage'a 'rethink_user' objesini yazmalı
-    // Örnek: localStorage.setItem('rethink_user', JSON.stringify({ name: 'Ahmet', avatar: 'profil.png' }));
-    const savedUser = localStorage.getItem('rethink_user');
+    if (!loginBtn || !userProfile) return;
 
-    if (savedUser) {
+    // auth.js içindeki güvenli, JWT ve cihaz fingerprint kontrolü yapan fonksiyonu bekliyoruz
+    const userData = await verifySessionWithBackend();
+
+    if (userData) {
         try {
-            const userData = JSON.parse(savedUser);
-            
-            // Elemanları doldur ve görünürlüğü değiştir
+            // Elemanları backend'den gelen en güncel verilerle dolduruyoruz
             document.getElementById('user-name').textContent = userData.name;
-            document.getElementById('user-avatar').src = userData.avatar;
+            // Backend orijinal nesnesinde 'picture' döndüğü için burayı picture yaptık
+            document.getElementById('user-avatar').src = userData.picture || 'assets/default-avatar.png';
             
+            // Senin orijinal CSS gizleme/gösterme sınıfların
             loginBtn.classList.add('hidden');
             userProfile.classList.remove('hidden');
         } catch (e) {
-            console.error("Kullanıcı verisi ayrıştırılamadı:", e);
+            console.error("Arayüz elementleri doldurulamadı:", e);
         }
     } else {
-        // Giriş yapılmadıysa varsayılan görünüm
+        // Giriş yapılmadıysa veya token geçersiz/cihaz farklıysa varsayılan görünüm
         loginBtn.classList.remove('hidden');
         userProfile.classList.add('hidden');
     }
 }
 
-// --- DROPDOWN MANTIĞI (style.css ".open" sınıfı ile tam uyumlu) ---
+// --- DROPDOWN MANTIĞI (Senin orijinal CSS '.open' sınıfı mantığın birebir korundu) ---
 function setupDropdownLogic() {
     const profileArea = document.getElementById('user-profile');
 
@@ -86,10 +88,12 @@ function setupDropdownLogic() {
     }
 }
 
-// Çıkış Yapma Fonksiyonu
-function logout() {
-    localStorage.removeItem('rethink_user');
-    window.location.reload(); // Sayfayı yenileyerek navbar durumunu sıfırla
+// --- ÇIKIŞ YAPMA FONKSİYONU ---
+function logout(event) {
+    if (event) event.preventDefault(); // Sayfa linkinin yukarı zıplamasını engeller
+    
+    // auth.js içinde yazdığımız güvenli çıkış ve yönlendirme fonksiyonunu çağırıyoruz
+    handleLogout();
 }
 
 // Sayfa yüklendiğinde fonksiyonu çalıştır

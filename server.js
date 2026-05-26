@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 // JWT için Güvenli Gizli Anahtar (Environment değişkeninden okunur)
-const JWT_SECRET = process.env.JWT_SECRET || 'rethink_ysek_guvenlikli_ozel_anahtar_54321';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Firebase Admin
 const serviceAccount = {

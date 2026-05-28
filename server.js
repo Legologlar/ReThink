@@ -125,27 +125,30 @@ app.post('/auth/google', async (req, res) => {
         const userRef = db.collection('users').doc(uid);
 
         // Kullanıcı oluştur / güncelle
-        await db.runTransaction(async (transaction) => {
-            const doc = await transaction.get(userRef);
+    // GOOGLE AUTH ENDPOINT içindeki ilgili alanı bu şekilde değiştirin:
+await db.runTransaction(async (transaction) => {
+    const doc = await transaction.get(userRef);
 
-            if (!doc.exists) {
-                transaction.set(userRef, {
-                    name,
-                    email,
-                    profilePic: picture,
-                    points: 0,
-                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                    lastLogin: admin.firestore.FieldValue.serverTimestamp()
-                });
-            } else {
-                transaction.update(userRef, {
-                    name,
-                    email,
-                    profilePic: picture,
-                    lastLogin: admin.firestore.FieldValue.serverTimestamp()
-                });
-            }
+    if (!doc.exists) {
+        // İlk kez kayıt oluyorsa tüm bilgileri (Google'dan gelen isim dahil) kaydet
+        transaction.set(userRef, {
+            name,
+            email,
+            profilePic: picture,
+            points: 0,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            lastLogin: admin.firestore.FieldValue.serverTimestamp()
         });
+    } else {
+        // 🌟 DÜZELTME: Kullanıcı zaten varsa, Google'dan gelen 'name' parametresini güncelleme!
+        // Böylece kullanıcının panelden değiştirdiği isim korunmuş olur.
+        transaction.update(userRef, {
+            email,
+            profilePic: picture, // Profil resmi değiştiyse güncellenebilir
+            lastLogin: admin.firestore.FieldValue.serverTimestamp()
+        });
+    }
+});
 
         // Güncel user verisini çek
         const updatedDoc = await userRef.get();

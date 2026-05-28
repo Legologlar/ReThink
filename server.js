@@ -126,12 +126,12 @@ app.post('/auth/register', async (req, res) => {
 
         // Gerçek e-posta gönderme fonksiyonu çağrılıyor
         const mailOptions = {
-            from: `"EcoCycle / ReThink" <${process.env.EMAIL_USER}>`,
+            from: `"ReThink" <${process.env.EMAIL_USER}>`, 
             to: email,
-            subject: 'EcoCycle Hesap Doğrulama Kodu',
+            subject: 'ReThink Hesap Doğrulama Kodu',
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e4e2e1; border-radius: 12px;">
-                    <h2 style="color: #334f2b; text-align: center;">EcoCycle'a Hoş Geldiniz!</h2>
+                    <h2 style="color: #334f2b; text-align: center;">ReThink'e Hoş Geldiniz!</h2>
                     <p>Merhaba ${fullName},</p>
                     <p>Hesabınızı aktive etmek ve doğrulama işlemini tamamlamak için aşağıdaki 6 haneli onay kodunu kullanabilirsiniz:</p>
                     <div style="background-color: #f0eded; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 5px; color: #334f2b; border-radius: 8px; margin: 20px 0;">
@@ -239,9 +239,9 @@ app.post('/auth/resend-code', async (req, res) => {
         const newCode = Math.floor(100000 + Math.random() * 900000).toString();
         
         const mailOptions = {
-            from: `"EcoCycle / ReThink" <${process.env.EMAIL_USER}>`,
+            from: `"ReThink" <${process.env.EMAIL_USER}>`,
             to: email,
-            subject: 'Yeni EcoCycle Hesap Doğrulama Kodu',
+            subject: 'Yeni ReThink Hesap Doğrulama Kodu',
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e4e2e1; border-radius: 12px;">
                     <h2 style="color: #334f2b; text-align: center;">Yeni Doğrulama Kodunuz</h2>

@@ -10,6 +10,8 @@
 <body>
     <script src="auth.js"></script>
 
+    <script src="script.js"></script>
+
     <script src="navbar.js"></script>
 
     <div class="dashboard-container">
@@ -31,14 +33,21 @@
     <script>
 window.onload = async function() {
 
-    const savedData = localStorage.getItem('user_data');
-
-    if (!savedData) {
+    // 🌟 YENİ SİSTEM KONTROLÜ: 
+    // Eski localStorage.getItem("user_data") yerine auth.js içindeki fonksiyonu çağırıyoruz.
+    if (typeof getLocalUser !== 'function') {
+        console.error("auth.js yüklenemedi!");
         window.location.href = 'index.html';
         return;
     }
 
-    const user = JSON.parse(savedData);
+    const user = getLocalUser();
+
+    // Eğer auth.js aktif bir kullanıcı bulamazsa, güvenle index.html'e yönlendirir
+    if (!user) {
+        window.location.href = 'index.html';
+        return;
+    }
 
     // ✅ KENDİ PUANINI GÖSTER
     document.getElementById('user-total-points').innerText =
@@ -54,17 +63,17 @@ window.onload = async function() {
         tbody.innerHTML = "";
 
         users.forEach((u, index) => {
-
-            const isMe = u.name === user.name;
+            // Backend'den dönen veriye göre u.name veya u.displayName kontrolü
+            const isMe = u.name === user.name || (user.uid && u.uid === user.uid);
 
             tbody.innerHTML += `
                 <tr class="${isMe ? 'user-row-highlight' : ''}">
                     <td class="rank">#${index + 1}</td>
                     <td class="user-info">
-                        <img src="${u.picture || 'https://ui-avatars.com/api/?name=' + u.name}">
-                        <span>${u.name} ${isMe ? '(Siz)' : ''}</span>
+                        <img src="${u.picture || u.photo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(u.name || 'User')}">
+                        <span>${u.name || 'Gizli Kullanıcı'} ${isMe ? '(Siz)' : ''}</span>
                     </td>
-                    <td class="points-cell">${u.points} Puan</td>
+                    <td class="points-cell">${u.points || 0} Puan</td>
                 </tr>
             `;
         });
@@ -74,4 +83,5 @@ window.onload = async function() {
     }
 }
 </script>
+</body>
 </html>

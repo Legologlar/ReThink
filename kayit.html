@@ -62,12 +62,14 @@
                         "on-tertiary-fixed": "#1c1c18",
                         "secondary-fixed": "#ffdbcf"
                     },
+
                     borderRadius: {
                         DEFAULT: "0.25rem",
                         lg: "0.5rem",
                         xl: "0.75rem",
                         full: "9999px"
                     },
+
                     spacing: {
                         "margin-desktop": "64px",
                         md: "16px",
@@ -79,6 +81,7 @@
                         "margin-mobile": "20px",
                         gutter: "16px"
                     },
+
                     fontFamily: {
                         "headline-md": ["Inter"],
                         "label-md": ["Inter"],
@@ -89,40 +92,106 @@
                         "headline-lg": ["Inter"],
                         "label-sm": ["Inter"]
                     },
+
                     fontSize: {
-                        "headline-md": ["22px", { lineHeight: "28px", fontWeight: "600" }],
-                        "label-md": ["14px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "500" }],
-                        "headline-xl-mobile": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }],
-                        "headline-xl": ["40px", { lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "700" }],
-                        "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
-                        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
-                        "headline-lg": ["28px", { lineHeight: "36px", letterSpacing: "-0.01em", fontWeight: "600" }],
-                        "label-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "600" }]
+                        "headline-md": [
+                            "22px",
+                            { lineHeight: "28px", fontWeight: "600" }
+                        ],
+
+                        "label-md": [
+                            "14px",
+                            {
+                                lineHeight: "20px",
+                                letterSpacing: "0.01em",
+                                fontWeight: "500"
+                            }
+                        ],
+
+                        "headline-xl-mobile": [
+                            "32px",
+                            {
+                                lineHeight: "40px",
+                                letterSpacing: "-0.02em",
+                                fontWeight: "700"
+                            }
+                        ],
+
+                        "headline-xl": [
+                            "40px",
+                            {
+                                lineHeight: "48px",
+                                letterSpacing: "-0.02em",
+                                fontWeight: "700"
+                            }
+                        ],
+
+                        "body-lg": [
+                            "18px",
+                            {
+                                lineHeight: "28px",
+                                fontWeight: "400"
+                            }
+                        ],
+
+                        "body-md": [
+                            "16px",
+                            {
+                                lineHeight: "24px",
+                                fontWeight: "400"
+                            }
+                        ],
+
+                        "headline-lg": [
+                            "28px",
+                            {
+                                lineHeight: "36px",
+                                letterSpacing: "-0.01em",
+                                fontWeight: "600"
+                            }
+                        ],
+
+                        "label-sm": [
+                            "12px",
+                            {
+                                lineHeight: "16px",
+                                letterSpacing: "0.05em",
+                                fontWeight: "600"
+                            }
+                        ]
                     }
                 }
             }
         };
     </script>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
 
     <style>
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: theme('colors.background');
+            font-family: "Inter", sans-serif;
+            background-color: theme("colors.background");
         }
+
         ::-webkit-scrollbar {
             display: none;
         }
+
         .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-variation-settings:
+                "FILL" 0,
+                "wght" 400,
+                "GRAD" 0,
+                "opsz" 24;
         }
+
         input:focus {
-            box-shadow: 0 0 0 1px theme('colors.primary');
+            box-shadow: 0 0 0 1px theme("colors.primary");
         }
     </style>
 </head>
@@ -130,8 +199,11 @@
 <body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col md:flex-row">
 
     <div class="hidden md:flex md:w-1/2 relative bg-surface-container-highest overflow-hidden">
+
         <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBnh2Vu2df0kNvFHs9ljK5AA95pQw0EDgOnrnNS3vrX4QI7zd5gCGgJx0VIoFSWKhgEOs3E0495o6XCxf2UNFQ1I8rJ_C60RdRy-DXWAOJr_VMYNS1Yryz2pWSf8dJUSrBhqlrhMqyP2HYGsSliEa6ugN0EuS3Mr9zgYGaOL4qXns4aqZ9tj85p_kbz0ECSdGDXQqyyOVZzORhLOqe8zxfemc4NGcLFO3bsZ2whSVDYht7NbOoUEKyYvqXMI9UlnekPd8Kph8dfYDC" alt="Environmental awareness panel" class="absolute inset-0 w-full h-full object-cover opacity-90 mix-blend-multiply" />
+
         <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+
         <div class="absolute bottom-margin-desktop left-margin-desktop right-margin-desktop">
             <h2 class="font-headline-lg text-headline-lg text-surface-container-lowest max-w-sm">
                 ReThink doğayı korumak için çalışan bir platformdur.
@@ -140,17 +212,21 @@
     </div>
 
     <div class="w-full md:w-1/2 flex flex-col justify-center px-margin-mobile py-xl md:px-margin-desktop bg-surface relative min-h-screen">
+
         <div class="w-full max-w-[440px] mx-auto mt-20 md:mt-0">
+
             <div class="mb-xl">
                 <h1 class="font-headline-xl-mobile text-headline-xl-mobile md:font-headline-xl md:text-headline-xl text-on-surface mb-sm">
                     Hesap Oluştur
                 </h1>
+
                 <p class="font-body-md text-body-md text-on-surface-variant">
                     Daha temiz bir gelecek için ilk adımı atın.
                 </p>
             </div>
 
             <form id="registerForm" onsubmit="handleKlasikKayit(event)" class="flex flex-col gap-lg">
+
                 <div class="flex flex-col gap-xs">
                     <label for="fullName" class="font-label-sm text-label-sm text-on-surface-variant">Ad Soyad</label>
                     <div class="relative">
@@ -196,11 +272,9 @@
                 </div>
 
                 <div class="flex flex-col gap-sm">
-                    <button type="button" class="w-full flex items-center justify-center gap-3 py-3 border border-outline-variant rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
-                        <span class="material-symbols-outlined text-[20px]">account_circle</span>
-                        Google ile Kayıt Ol
-                    </button>
-                    <button type="button" class="w-full flex items-center justify-center gap-3 py-3 border border-outline-variant rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+                    <div id="registerGoogleBtnDiv" class="w-full flex justify-center"></div>
+
+                    <button type="button" onclick="handleMicrosoftRegister()" class="w-full flex items-center justify-center gap-3 py-3 border border-outline-variant rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
                         <span class="material-symbols-outlined text-[20px]">grid_view</span>
                         Microsoft ile Kayıt Ol
                     </button>
@@ -218,9 +292,12 @@
         </div>
     </div>
 
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
     <script src="auth.js"></script>
 
     <script>
+        // Şifre Göster / Gizle
         function togglePassword() {
             const passwordInput = document.getElementById('password');
             const visibilityIcon = document.getElementById('visibilityIcon');
@@ -233,15 +310,13 @@
             }
         }
 
-        // --- Backend'e Güvenli Hash İstekleri Gönderen Motor ---
+        // --- Klasik Form ile Kayıt ---
         async function handleKlasikKayit(event) {
             event.preventDefault();
 
             const fullName = document.getElementById("fullName").value.trim();
             const email = document.getElementById("email").value.trim();
             const password = document.getElementById("password").value;
-
-            console.log("Kayıt verileri güvenli hash motoruna gönderiliyor...");
 
             try {
                 const res = await fetch('https://rethink-lhse.onrender.com/auth/register', {
@@ -251,14 +326,8 @@
                 });
 
                 const data = await res.json();
+                if (!res.ok) throw new Error(data.message || "Kayıt işlemi başarısız.");
 
-                if (!res.ok) {
-                    throw new Error(data.message || "Kayıt işlemi başarısız.");
-                }
-
-                console.log("Kayıt başarılı! Oturum tokenı mühürleniyor...");
-
-                // auth.js merkezine yeni oturumu mühürlüyoruz
                 if (typeof saveSession === 'function') {
                     saveSession(data.token, data.user);
                 } else {
@@ -266,13 +335,59 @@
                     localStorage.setItem('rethink_user', JSON.stringify(data.user));
                 }
 
-                // Sistem tamamen hazır olduğunda dashboard'a uçur
                 window.location.href = 'dashboard.html';
 
             } catch (err) {
-                console.error("Kayıt Hatası:", err);
-                alert(err.message || "Kayıt sırasında bir sunucu hatası oluştu.");
+                alert(err.message || "Kayıt sırasında bir hata oluştu.");
             }
+        }
+
+        // --- 🌐 Google Resmi Buton Motoru Çağrısı ---
+        window.onload = function () {
+            google.accounts.id.initialize({
+                client_id: "BURAYA_GOOGLE_CONSOLE_CLIENT_ID_YAZILACAK", 
+                callback: handleGoogleRegisterResponse
+            });
+
+            // Butonu div içerisine enjekte ediyoruz
+            google.accounts.id.renderButton(
+                document.getElementById("registerGoogleBtnDiv"),
+                { theme: "outline", size: "large", width: "440", text: "signup_with" } 
+            );
+        };
+
+        // Google penceresinden dönen şifreli JWT tokenını yakalayan fonksiyon
+        function handleGoogleRegisterResponse(response) {
+            console.log("Google JWT Token alındı, Render backend'e yollanıyor...");
+
+            fetch('https://rethink-lhse.onrender.com/auth/google-register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ credential: response.credential }) // Google'dan gelen token
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Google kaydı backend tarafından onaylanmadı.");
+                return res.json();
+            })
+            .then(data => {
+                if (data.token && data.user) {
+                    if (typeof saveSession === 'function') {
+                        saveSession(data.token, data.user);
+                    } else {
+                        localStorage.setItem('rethink_token', data.token);
+                        localStorage.setItem('rethink_user', JSON.stringify(data.user));
+                    }
+                    window.location.href = 'dashboard.html';
+                }
+            })
+            .catch(err => {
+                console.error("Google Kayıt Hatası:", err);
+                alert(err.message);
+            });
+        }
+
+        function handleMicrosoftRegister() {
+            alert("Microsoft ile kayıt altyapısı şu anda yapım aşamasındadır.");
         }
     </script>
 </body>

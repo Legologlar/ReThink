@@ -76,3 +76,20 @@ function handleLogout() {
     // Sayfayı yenilemek yerine doğrudan ana sayfaya yönlendiriyoruz ki cache (önbellek) kilitlenmeleri yaşanmasın
     window.location.href = 'index.html'; 
 }
+
+// ... senin mevcut auth.js kodlarının bittiği yerin hemen altına ekle:
+
+/**
+ * Tarayıcıda kayıtlı olan lokal kullanıcı verisini döner.
+ */
+function getLocalUser() {
+    const user = localStorage.getItem('rethink_user');
+    return user ? JSON.parse(user) : null;
+}
+
+/**
+ * Tarayıcıdaki lokal kullanıcı verisini günceller (Örn: Puan tazelendiğinde script.js kullanır).
+ */
+function updateLocalUser(newUser) {
+    localStorage.setItem('rethink_user', JSON.stringify(newUser));
+}

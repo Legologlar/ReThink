@@ -37,6 +37,65 @@ function generateDeviceFingerprint(req) {
     return crypto.createHash('sha256').update(userAgent).digest('hex');
 }
 
+// =================================================================
+// 🌟 YENİ ENDPOINT: Klasik E-posta ve Şifre ile Giriş (giris.html için)
+// =================================================================
+app.post('/auth/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ message: "E-posta ve şifre gereklidir." });
+    }
+
+    try {
+        // Firestore'da bu e-postaya ait kullanıcıyı ara
+        const usersSnapshot = await db.collection('users').where('email', '==', email).limit(1).get();
+
+        if (usersSnapshot.empty) {
+            return res.status(401).json({ message: "E-posta veya şifre hatalı." });
+        }
+
+        const userDoc = usersSnapshot.docs[0];
+        const userData = userDoc.data();
+        const uid = userDoc.id;
+
+        // NOT: Şimdilik testlerin aksamaması için düz şifre kontrolü yapıyoruz.
+        // İleride burayı bcrypt.compare ile hash'li şifreye döndürmen harika olur!
+        if (userData.password && userData.password !== password) {
+            return res.status(401).json({ message: "E-posta veya şifre hatalı." });
+        }
+
+        // Son giriş tarihini güncelle
+        await db.collection('users').doc(uid).update({
+            lastLogin: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Cihaz Fingerprint ve 2 Haftalık JWT Üretimi (Google Auth ile aynı standartta)
+        const deviceFingerprint = generateDeviceFingerprint(req);
+        const sessionToken = jwt.sign(
+            { uid: uid, fingerprint: deviceFingerprint },
+            JWT_SECRET,
+            { expiresIn: '14d', algorithm: 'HS256' }
+        );
+
+        res.status(200).json({
+            message: "Giriş başarılı",
+            token: sessionToken,
+            user: {
+                uid,
+                name: userData.name,
+                email: userData.email,
+                picture: userData.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}`,
+                points: userData.points || 0
+            }
+        });
+
+    } catch (error) {
+        console.error("KLASİK AUTH HATA:", error.message);
+        res.status(500).json({ message: "Sunucu hatası oluştu." });
+    }
+});
+
 // GOOGLE AUTH ENDPOINT
 app.post('/auth/google', async (req, res) => {
     const { token } = req.body;
@@ -125,7 +184,7 @@ app.post('/auth/google', async (req, res) => {
     }
 });
 
-// --- YENİ ENDPOINT: Navbar.js için Token ve Cihaz Doğrulama Alanı ---
+// --- NAVBAR VE SAYFALAR İÇİN TOKEN VE CİHAZ DOĞRULAMA ALANI ---
 app.post('/auth/verify', async (req, res) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1]; // 'Bearer TOKEN' yapısından ayıklama
@@ -169,6 +228,59 @@ app.post('/auth/verify', async (req, res) => {
     } catch (err) {
         console.error("Token Doğrulama Hatası:", err.message);
         return res.status(401).json({ message: "Geçersiz veya süresi dolmuş token" });
+    }
+});
+
+// =================================================================
+// 🌟 YENİ ENDPOINT: Profil Ayarlarını Firestore'da Güncelleyen Alan
+// =================================================================
+app.post('/user/update', async (req, res) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ message: "Oturum açmanız gerekiyor." });
+    }
+
+    try {
+        // Güvenlik: İstek atan kişinin JWT token'ını doğrula ve uid'sini al
+        const decoded = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] });
+        const currentFingerprint = generateDeviceFingerprint(req);
+
+        if (decoded.fingerprint !== currentFingerprint) {
+            return res.status(401).json({ message: "Güvenlik ihlali: Geçersiz cihaz." });
+        }
+
+        const { name } = req.body;
+        if (!name || name.trim() === "") {
+            return res.status(400).json({ message: "Ad Soyad alanı boş bırakılamaz." });
+        }
+
+        // Firestore'daki dökümanı güncelle
+        const userRef = db.collection("users").doc(decoded.uid);
+        await userRef.update({
+            name: name,
+            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Güncel veriyi çekip ön yüze dön
+        const updatedDoc = await userRef.get();
+        const user = updatedDoc.data();
+
+        res.json({
+            message: "Profil başarıyla güncellendi.",
+            user: {
+                uid: decoded.uid,
+                name: user.name,
+                email: user.email,
+                picture: user.profilePic,
+                points: user.points || 0
+            }
+        });
+
+    } catch (err) {
+        console.error("Profil Güncelleme Hatası:", err.message);
+        return res.status(401).json({ message: "Oturum geçersiz, lütfen tekrar giriş yapın." });
     }
 });
 

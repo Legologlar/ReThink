@@ -1,6 +1,6 @@
 
 
-```markdown
+
 # ReThink
 
 ReThink is a sustainable technology initiative aimed at promoting responsible recycling habits. The platform simplifies the recycling process by providing users with an accessible system to track, manage, and verify their contributions to environmental sustainability.

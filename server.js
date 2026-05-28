@@ -5,6 +5,7 @@ const cors = require('cors');
 const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken'); // JWT işlemleri için eklendi
 const crypto = require('crypto');     // Cihaz fingerprint hash'i için eklendi
+const bcrypt = require('bcrypt');     // 🔒 EKSİK OLAN KÜTÜPHANE EKLENDİ: Şifre hash/karşılaştırma için
 
 const app = express();
 app.use(cors());
@@ -38,7 +39,7 @@ function generateDeviceFingerprint(req) {
 }
 
 // =================================================================
-// 🌟 YENİ ENDPOINT: Klasik E-posta ve Şifre ile Giriş (giris.html için)
+// 🌟 GÜNCELLENDİ endpoint: Klasik E-posta ve Şifre ile Giriş (giris.html için)
 // =================================================================
 app.post('/auth/login', async (req, res) => {
     const { email, password } = req.body;
@@ -59,9 +60,20 @@ app.post('/auth/login', async (req, res) => {
         const userData = userDoc.data();
         const uid = userDoc.id;
 
-        // NOT: Şimdilik testlerin aksamaması için düz şifre kontrolü yapıyoruz.
-        // İleride burayı bcrypt.compare ile hash'li şifreye döndürmen harika olur!
-        if (userData.password && userData.password !== password) {
+        // 🔒 GÜVENLİK GÜNCELLEMESİ: giris.html'den gelen düz şifreyi, db'deki 10 kere hash'lenmiş şifreyle karşılaştırır
+        let isPasswordValid = false;
+
+        if (userData.password) {
+            // Eğer veritabanındaki şifre bcrypt ile hash'lenmişse (örneğin $2b$ ile başlıyorsa)
+            if (userData.password.startsWith('$2b$') || userData.password.startsWith('$2a$')) {
+                isPasswordValid = await bcrypt.compare(password, userData.password);
+            } else {
+                // FALLBACK: Eğer veritabanında hala eski, hash'lenmemiş düz şifre kalmışsa testlerin aksamaması için düz kontrol yap
+                isPasswordValid = (userData.password === password);
+            }
+        }
+
+        if (!isPasswordValid) {
             return res.status(401).json({ message: "E-posta veya şifre hatalı." });
         }
 
@@ -97,7 +109,7 @@ app.post('/auth/login', async (req, res) => {
 });
 
 // =================================================================
-// 🌟 YENİ ENDPOINT: Bcrypt ile Şifreli Kayıt Olma Sistemi (kayit.html için)
+// 🌟 GÜNCELLESTİRİLDİ ENDPOINT: Bcrypt ile 10 Tur Şifreli Kayıt Olma Sistemi (kayit.html için)
 // =================================================================
 app.post('/auth/register', async (req, res) => {
     const { fullName, email, password } = req.body;
@@ -113,8 +125,7 @@ app.post('/auth/register', async (req, res) => {
             return res.status(400).json({ message: "Bu e-posta adresi zaten kullanımda." });
         }
 
-        // 2. GÜVENLİK ADIMI: Şifreyi tek yönlü hash'leme işleminden geçiriyoruz
-        // Şifreyi sunucuyu yöneten sen bile veritabanına baksan göremeyeceksin
+        // 2. GÜVENLİK ADIMI: Şifreyi tam 10 salt round kullanarak tek yönlü hash'leme işleminden geçiriyoruz
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // 3. Benzersiz bir UID oluşturma (Firestore otomatik ID veya özel ID üretebilir)
@@ -189,30 +200,29 @@ app.post('/auth/google', async (req, res) => {
         const userRef = db.collection('users').doc(uid);
 
         // Kullanıcı oluştur / güncelle
-    // GOOGLE AUTH ENDPOINT içindeki ilgili alanı bu şekilde değiştirin:
-await db.runTransaction(async (transaction) => {
-    const doc = await transaction.get(userRef);
+        await db.runTransaction(async (transaction) => {
+            const doc = await transaction.get(userRef);
 
-    if (!doc.exists) {
-        // İlk kez kayıt oluyorsa tüm bilgileri (Google'dan gelen isim dahil) kaydet
-        transaction.set(userRef, {
-            name,
-            email,
-            profilePic: picture,
-            points: 0,
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
-            lastLogin: admin.firestore.FieldValue.serverTimestamp()
+            if (!doc.exists) {
+                // İlk kez kayıt oluyorsa tüm bilgileri (Google'dan gelen isim dahil) kaydet
+                transaction.set(userRef, {
+                    name,
+                    email,
+                    profilePic: picture,
+                    points: 0,
+                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                    lastLogin: admin.firestore.FieldValue.serverTimestamp()
+                });
+            } else {
+                // 🌟 DÜZELTME: Kullanıcı zaten varsa, Google'dan gelen 'name' parametresini güncelleme!
+                // Böylece kullanıcının panelden değiştirdiği isim korunmuş olur.
+                transaction.update(userRef, {
+                    email,
+                    profilePic: picture, // Profil resmi değiştiyse güncellenebilir
+                    lastLogin: admin.firestore.FieldValue.serverTimestamp()
+                });
+            }
         });
-    } else {
-        // 🌟 DÜZELTME: Kullanıcı zaten varsa, Google'dan gelen 'name' parametresini güncelleme!
-        // Böylece kullanıcının panelden değiştirdiği isim korunmuş olur.
-        transaction.update(userRef, {
-            email,
-            profilePic: picture, // Profil resmi değiştiyse güncellenebilir
-            lastLogin: admin.firestore.FieldValue.serverTimestamp()
-        });
-    }
-});
 
         // Güncel user verisini çek
         const updatedDoc = await userRef.get();
@@ -387,16 +397,15 @@ app.get("/leaderboard", async (req, res) => {
 
         const users = [];
 
-// server.js içindeki /leaderboard alanında bu kısmı bulun ve değiştirin:
-    snapshot.forEach(doc => {
-        const data = doc.data();
-        users.push({
-            uid: doc.id, // 🌟 İŞTE KRİTİK NOKTA: Kullanıcının benzersiz Firestore ID'sini listeye ekliyoruz
-            name: data.name,
-            picture: data.profilePic,
-            points: data.points || 0
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            users.push({
+                uid: doc.id, // 🌟 İŞTE KRİTİK NOKTA: Kullanıcının benzersiz Firestore ID'sini listeye ekliyoruz
+                name: data.name,
+                picture: data.profilePic,
+                points: data.points || 0
+            });
         });
-    });
 
         res.json(users);
 

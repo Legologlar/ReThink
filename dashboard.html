@@ -78,22 +78,23 @@ window.onload = async function() {
 
         tbody.innerHTML = "";
 
-        users.forEach((u, index) => {
-            // Eşleşmeyi hem isimden hem de uid üzerinden garantiye alıyoruz
-            const isMe = u.name === user.name || (user.uid && u.uid === user.uid);
+users.forEach((u, index) => {
+    // 🌟 ARTIK İSME DEĞİL, BENZERSİZ UID'YE BAKIYORUZ!
+    // Eğer backend'den gelen u.uid ile o an oturum açmış user.uid eşleşiyorsa o kişi SİZSİNİZDİR.
+    const isMe = u.uid === user.uid;
 
-            tbody.innerHTML += `
-                <tr class="${isMe ? 'user-row-highlight' : ''}">
-                    <td class="rank">#${index + 1}</td>
-                    <td class="user-info">
-                        <img src="${u.picture || u.photo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(u.name || 'User')}">
-                        <span>${u.name || 'Gizli Kullanıcı'} ${isMe ? '(Siz)' : ''}</span>
-                    </td>
-                    <td class="points-cell">${u.points || 0} Puan</td>
-                </tr>
-            `;
-        });
-
+    tbody.innerHTML += `
+        <tr class="${isMe ? 'user-row-highlight' : ''}">
+            <td class="rank">#${index + 1}</td>
+            <td class="user-info">
+                <img src="${u.picture || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(u.name || 'User')}">
+                <span>${u.name || 'Gizli Kullanıcı'} ${isMe ? '(Siz)' : ''}</span>
+            </td>
+            <td class="points-cell">${u.points || 0} Puan</td>
+        </tr>
+    `;
+});
+        
     } catch (err) {
         console.error("Leaderboard alınamadı:", err);
     }

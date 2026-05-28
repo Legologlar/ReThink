@@ -6,7 +6,7 @@ const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken'); 
 const crypto = require('crypto');     
 const bcrypt = require('bcrypt');     
-const nodemailer = require('nodemailer'); // 1. EKSİK OLAN MODÜL EKLENDİ
+const nodemailer = require('nodemailer'); 
 
 const app = express();
 app.use(cors());
@@ -25,23 +25,40 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
+
+// ─── FIRESTORE RENDER OPTİMİZASYONU ─────────────────────────────────
+// Ağ zaman aşımlarını engellemek için Firestore ayarlarını yapılandırıyoruz
+db.settings({
+    ignoreUndefinedProperties: true,
+    ssl: true
+});
+
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(CLIENT_ID);
 
-// ─── NODEMAILER YAPILANDIRMASI ──────────────────────────────────────
+// ─── NODEMAILER YAPILANDIRMASI (SSL PORTO - 465) ────────────────────
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 465,         // 587 yerine SSL portu olan 465 kullanın
-    secure: true,      // port 465 olduğu için burası kesinlikle true olmalı
+    port: 465,         
+    secure: true,      
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     },
-    connectionTimeout: 10000, // 10 saniye sonra beklemeyi bırak (kilitlenmeyi önler)
-    greetingTimeout: 10000
+    connectionTimeout: 5000, // 5 saniyeye düşürüldü
+    greetingTimeout: 5000,
+    socketTimeout: 5000
 });
-// Geçici doğrulama kodları için bellek alanı
+
 const verificationStore = new Map(); 
+
+// Firestore kilitlenmelerini önlemek için evrensel zaman aşımı sarmalı
+const withTimeout = (promise, ms = 5000) => {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms))
+    ]);
+};
 
 function generateDeviceFingerprint(req) {
     const userAgent = req.headers['user-agent'] || 'unknown-device';
@@ -56,7 +73,12 @@ app.post('/auth/login', async (req, res) => {
     }
 
     try {
-        const usersSnapshot = await db.collection('users').where('email', '==', email).limit(1).get();
+        // Firestore isteğini zaman aşımı kontrolü ile sarıyoruz
+        const usersSnapshot = await withTimeout(
+            db.collection('users').where('email', '==', email).limit(1).get(),
+            6000
+        );
+
         if (usersSnapshot.empty) {
             return res.status(401).json({ message: "E-posta veya şifre hatalı." });
         }
@@ -82,9 +104,12 @@ app.post('/auth/login', async (req, res) => {
             return res.status(401).json({ message: "E-posta veya şifre hatalı." });
         }
 
-        await db.collection('users').doc(uid).update({
-            lastLogin: admin.firestore.FieldValue.serverTimestamp()
-        });
+        await withTimeout(
+            db.collection('users').doc(uid).update({
+                lastLogin: admin.firestore.FieldValue.serverTimestamp()
+            }),
+            4000
+        );
 
         const deviceFingerprint = generateDeviceFingerprint(req);
         const sessionToken = jwt.sign(
@@ -106,11 +131,14 @@ app.post('/auth/login', async (req, res) => {
         });
     } catch (error) {
         console.error("KLASİK AUTH HATA:", error.message);
+        if (error.message === 'Timeout') {
+            return res.status(504).json({ message: "Veritabanı bağlantı zaman aşımına uğradı, lütfen tekrar deneyin." });
+        }
         res.status(500).json({ message: "Sunucu hatası oluştu." });
     }
 });
 
-// ─── REGISTER ENDPOINT (E-POSTA GÖNDERİMİ ENTEGRE EDİLDİ) ─────────
+// ─── REGISTER ENDPOINT (ASENKRON E-POSTA VE TIMEOUT ENTEGRESİ) ────
 app.post('/auth/register', async (req, res) => {
     const { fullName, email, password } = req.body;
 
@@ -119,7 +147,11 @@ app.post('/auth/register', async (req, res) => {
     }
 
     try {
-        const userCheck = await db.collection('users').where('email', '==', email).limit(1).get();
+        const userCheck = await withTimeout(
+            db.collection('users').where('email', '==', email).limit(1).get(),
+            5000
+        );
+
         if (!userCheck.empty) {
             return res.status(400).json({ message: "Bu e-posta adresi zaten kullanımda." });
         }
@@ -127,7 +159,6 @@ app.post('/auth/register', async (req, res) => {
         const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Gerçek e-posta gönderme fonksiyonu çağrılıyor
         const mailOptions = {
             from: `"ReThink" <${process.env.EMAIL_USER}>`, 
             to: email,
@@ -145,7 +176,11 @@ app.post('/auth/register', async (req, res) => {
             `
         };
 
-        await transporter.sendMail(mailOptions);
+        // CRITICAL DEĞİŞİKLİK: await kaldırıldı! E-posta arka planda gönderilirken,
+        // sunucu eşzamanlı olarak istemciye (frontend) anında yanıt döner. Gecikme yaşanmaz.
+        transporter.sendMail(mailOptions).catch(mailErr => {
+            console.error("[ARKA PLAN E-POSTA HATASI]:", mailErr.message);
+        });
 
         verificationStore.set(email, {
             fullName,
@@ -154,12 +189,15 @@ app.post('/auth/register', async (req, res) => {
             expiresAt: Date.now() + 10 * 60 * 1000 
         });
 
-        console.log(`\n[E-POSTA GÖNDERİLDİ] Kullanıcı: ${email} | Kod: ${verificationCode}\n`);
+        console.log(`\n[E-POSTA ARKA PLANDA TETİKLENDİ] Kullanıcı: ${email} | Kod: ${verificationCode}\n`);
         res.status(200).json({ message: "Doğrulama kodu gönderildi." });
 
     } catch (error) {
         console.error("KAYIT HATA:", error.message);
-        res.status(500).json({ message: "Sunucu hatası, doğrulama e-postası gönderilemedi." });
+        if (error.message === 'Timeout') {
+            return res.status(504).json({ message: "Veritabanı meşgul, lütfen birazdan tekrar deneyin." });
+        }
+        res.status(500).json({ message: "Sunucu hatası meydana geldi." });
     }
 });
 
@@ -201,7 +239,7 @@ app.post('/auth/verify-code', async (req, res) => {
             lastLogin: admin.firestore.FieldValue.serverTimestamp()
         };
 
-        await userRef.set(newUser);
+        await withTimeout(userRef.set(newUser), 6000);
         verificationStore.delete(email); 
 
         const deviceFingerprint = generateDeviceFingerprint(req);
@@ -225,11 +263,14 @@ app.post('/auth/verify-code', async (req, res) => {
 
     } catch (error) {
         console.error("KOD DOĞRULAMA SISTEM HATASI:", error.message);
+        if (error.message === 'Timeout') {
+            return res.status(504).json({ message: "Veritabanı kayıt zaman aşımı. Kodunuz doğru fakat veritabanı yanıt vermedi, lütfen tekrar onaylayın." });
+        }
         res.status(500).json({ message: "Hesap oluşturulurken sunucu hatası meydana geldi." });
     }
 });
 
-// ─── RESEND CODE ENDPOINT (E-POSTA GÖNDERİMİ ENTEGRE EDİLDİ) ─────────
+// ─── RESEND CODE ENDPOINT ────────────────────────────────────────
 app.post('/auth/resend-code', async (req, res) => {
     const { email } = req.body;
     const verificationData = verificationStore.get(email);
@@ -257,18 +298,20 @@ app.post('/auth/resend-code', async (req, res) => {
             `
         };
 
-        await transporter.sendMail(mailOptions);
+        transporter.sendMail(mailOptions).catch(mailErr => {
+            console.error("[ARKA PLAN YENİDEN E-POSTA HATASI]:", mailErr.message);
+        });
 
         verificationData.code = newCode;
         verificationData.expiresAt = Date.now() + 10 * 60 * 1000;
         verificationStore.set(email, verificationData);
 
-        console.log(`\n[YENİ E-POSTA GÖNDERİLDİ] Kullanıcı: ${email} | Yeni Kod: ${newCode}\n`);
+        console.log(`\n[YENİ E-POSTA ARKA PLANDA TETİKLENDİ] Kullanıcı: ${email} | Yeni Kod: ${newCode}\n`);
         res.status(200).json({ message: "Yeni doğrulama kodu gönderildi." });
 
     } catch (error) {
         console.error("YENİDEN GÖNDERİM HATA:", error.message);
-        res.status(500).json({ message: "Yeni kod e-posta ile gönderilemedi." });
+        res.status(500).json({ message: "Yeni kod işlenirken hata oluştu." });
     }
 });
 
@@ -293,28 +336,31 @@ app.post('/auth/google', async (req, res) => {
         const { name, email, picture } = payload;
         const userRef = db.collection('users').doc(uid);
 
-        await db.runTransaction(async (transaction) => {
-            const doc = await transaction.get(userRef);
-            if (!doc.exists) {
-                transaction.set(userRef, {
-                    name,
-                    email,
-                    profilePic: picture,
-                    points: 0,
-                    isVerified: true,
-                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                    lastLogin: admin.firestore.FieldValue.serverTimestamp()
-                });
-            } else {
-                transaction.update(userRef, {
-                    email,
-                    profilePic: picture, 
-                    lastLogin: admin.firestore.FieldValue.serverTimestamp()
-                });
-            }
-        });
+        await withTimeout(
+            db.runTransaction(async (transaction) => {
+                const doc = await transaction.get(userRef);
+                if (!doc.exists) {
+                    transaction.set(userRef, {
+                        name,
+                        email,
+                        profilePic: picture,
+                        points: 0,
+                        isVerified: true,
+                        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                        lastLogin: admin.firestore.FieldValue.serverTimestamp()
+                    });
+                } else {
+                    transaction.update(userRef, {
+                        email,
+                        profilePic: picture, 
+                        lastLogin: admin.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+            }),
+            7000
+        );
 
-        const updatedDoc = await userRef.get();
+        const updatedDoc = await withTimeout(userRef.get(), 4000);
         const userData = updatedDoc.data();
         const deviceFingerprint = generateDeviceFingerprint(req);
         const sessionToken = jwt.sign(
@@ -356,7 +402,7 @@ app.post('/auth/verify', async (req, res) => {
         }
 
         const userRef = db.collection("users").doc(decoded.uid);
-        const doc = await userRef.get();
+        const doc = await withTimeout(userRef.get(), 4000);
 
         if (!doc.exists) return res.status(404).json({ message: "Kullanıcı veritabanında bulunamadı" });
 
@@ -397,12 +443,15 @@ app.post('/user/update', async (req, res) => {
         }
 
         const userRef = db.collection("users").doc(decoded.uid);
-        await userRef.update({
-            name: name,
-            updatedAt: admin.firestore.FieldValue.serverTimestamp()
-        });
+        await withTimeout(
+            userRef.update({
+                name: name,
+                updatedAt: admin.firestore.FieldValue.serverTimestamp()
+            }),
+            4000
+        );
 
-        const updatedDoc = await userRef.get();
+        const updatedDoc = await withTimeout(userRef.get(), 4000);
         const user = updatedDoc.data();
 
         res.json({
@@ -423,7 +472,7 @@ app.post('/user/update', async (req, res) => {
 app.get("/user/:uid", async (req, res) => {
     try {
         const userRef = db.collection("users").doc(req.params.uid);
-        const doc = await userRef.get();
+        const doc = await withTimeout(userRef.get(), 4000);
         if (!doc.exists) return res.status(404).json({ message: "User not found" });
         const user = doc.data();
         res.json({
@@ -441,7 +490,10 @@ app.get("/user/:uid", async (req, res) => {
 app.get("/leaderboard", async (req, res) => {
     try {
         const limit = parseInt(req.query.limit) || 10;
-        const snapshot = await db.collection("users").orderBy("points", "desc").limit(limit).get();
+        const snapshot = await withTimeout(
+            db.collection("users").orderBy("points", "desc").limit(limit).get(),
+            5000
+        );
         const users = [];
         snapshot.forEach(doc => {
             const data = doc.data();

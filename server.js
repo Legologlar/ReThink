@@ -323,14 +323,16 @@ app.get("/leaderboard", async (req, res) => {
 
         const users = [];
 
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            users.push({
-                name: data.name,
-                picture: data.profilePic,
-                points: data.points || 0
-            });
+// server.js içindeki /leaderboard alanında bu kısmı bulun ve değiştirin:
+    snapshot.forEach(doc => {
+        const data = doc.data();
+        users.push({
+            uid: doc.id, // 🌟 İŞTE KRİTİK NOKTA: Kullanıcının benzersiz Firestore ID'sini listeye ekliyoruz
+            name: data.name,
+            picture: data.profilePic,
+            points: data.points || 0
         });
+    });
 
         res.json(users);
 

@@ -74,5 +74,5 @@ Create a `.env` file in the root directory and add the following keys based on y
 
 ## 📜 License
 
-This project is licensed under the MIT License - see the [LICENSE](https://www.google.com/search?q=LICENSE) file for details.
+This project is licensed under the MIT License - see the LICENSE.md file for details.
 

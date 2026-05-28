@@ -30,13 +30,16 @@ const client = new OAuth2Client(CLIENT_ID);
 
 // ─── NODEMAILER YAPILANDIRMASI ──────────────────────────────────────
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,         // 587 yerine SSL portu olan 465 kullanın
+    secure: true,      // port 465 olduğu için burası kesinlikle true olmalı
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
-    }
+    },
+    connectionTimeout: 10000, // 10 saniye sonra beklemeyi bırak (kilitlenmeyi önler)
+    greetingTimeout: 10000
 });
-
 // Geçici doğrulama kodları için bellek alanı
 const verificationStore = new Map(); 
 

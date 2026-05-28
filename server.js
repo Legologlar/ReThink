@@ -150,27 +150,25 @@ app.post('/auth/register', async (req, res) => {
         const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const mailOptions = {
-            from: `"ReThink" <${process.env.EMAIL_USER}>`, 
-            to: email,
-            subject: 'ReThink Hesap Doğrulama Kodu',
-            html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e4e2e1; border-radius: 12px;">
-                    <h2 style="color: #334f2b; text-align: center;">ReThink'e Hoş Geldiniz!</h2>
-                    <p>Merhaba ${fullName},</p>
-                    <p>Hesabınızı aktive etmek ve doğrulama işlemini tamamlamak için aşağıdaki 6 haneli onay kodunu kullanabilirsiniz:</p>
-                    <div style="background-color: #f0eded; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 5px; color: #334f2b; border-radius: 8px; margin: 20px 0;">
-                        ${verificationCode}
-                    </div>
-                    <p style="font-size: 12px; color: #73796f;">Bu kod 10 dakika boyunca geçerlidir. Eğer bu başvuruyu siz yapmadıysanız lütfen bu e-postayı dikkate almayınız.</p>
+        // Brevo ile E-posta Gönderimi
+        const sendSmtpEmail = new Brevo.SendSmtpEmail();
+        sendSmtpEmail.subject = "ReThink Hesap Doğrulama Kodu";
+        sendSmtpEmail.sender = { "name": "ReThink", "email": process.env.EMAIL_USER };
+        sendSmtpEmail.to = [{ "email": email, "name": fullName }];
+        sendSmtpEmail.htmlContent = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e4e2e1; border-radius: 12px;">
+                <h2 style="color: #334f2b; text-align: center;">ReThink'e Hoş Geldiniz!</h2>
+                <p>Merhaba ${fullName},</p>
+                <p>Hesabınızı aktive etmek ve doğrulama işlemini tamamlamak için aşağıdaki 6 haneli onay kodunu kullanabilirsiniz:</p>
+                <div style="background-color: #f0eded; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 5px; color: #334f2b; border-radius: 8px; margin: 20px 0;">
+                    ${verificationCode}
                 </div>
-            `
-        };
+                <p style="font-size: 12px; color: #73796f;">Bu kod 10 dakika boyunca geçerlidir. Eğer bu başvuruyu siz yapmadıysanız lütfen bu e-postayı dikkate almayınız.</p>
+            </div>
+        `;
 
-        // CRITICAL DEĞİŞİKLİK: await kaldırıldı! E-posta arka planda gönderilirken,
-        // sunucu eşzamanlı olarak istemciye (frontend) anında yanıt döner. Gecikme yaşanmaz.
-        transporter.sendMail(mailOptions).catch(mailErr => {
-            console.error("[ARKA PLAN E-POSTA HATASI]:", mailErr.message);
+        apiInstance.sendTransacEmail(sendSmtpEmail).catch(err => {
+            console.error("[BREVO API HATASI]:", err.body || err.message);
         });
 
         verificationStore.set(email, {
@@ -273,24 +271,25 @@ app.post('/auth/resend-code', async (req, res) => {
     try {
         const newCode = Math.floor(100000 + Math.random() * 900000).toString();
         
-        const mailOptions = {
-            from: `"ReThink" <${process.env.EMAIL_USER}>`,
-            to: email,
-            subject: 'Yeni ReThink Hesap Doğrulama Kodu',
-            html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e4e2e1; border-radius: 12px;">
-                    <h2 style="color: #334f2b; text-align: center;">Yeni Doğrulama Kodunuz</h2>
-                    <p>İstediğiniz yeni doğrulama kodu aşağıdadır:</p>
-                    <div style="background-color: #f0eded; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 5px; color: #334f2b; border-radius: 8px; margin: 20px 0;">
-                        ${newCode}
-                    </div>
-                    <p style="font-size: 12px; color: #73796f;">Bu kod 10 dakika boyunca geçerlidir.</p>
+        // Brevo ile E-postaya yeni kod Gönderimi
+        const sendSmtpEmail = new Brevo.SendSmtpEmail();
+        sendSmtpEmail.subject = "ReThink Yeni Hesap Doğrulama Kodu";
+        sendSmtpEmail.sender = { "name": "ReThink", "email": process.env.EMAIL_USER };
+        sendSmtpEmail.to = [{ "email": email, "name": fullName }];
+        sendSmtpEmail.htmlContent = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e4e2e1; border-radius: 12px;">
+                <h2 style="color: #334f2b; text-align: center;">ReThink'e Hoş Geldiniz!</h2>
+                <p>Merhaba ${fullName},</p>
+                <p>Hesabınızı aktive etmek ve doğrulama işlemini tamamlamak için aşağıdaki 6 haneli onay kodunu kullanabilirsiniz:</p>
+                <div style="background-color: #f0eded; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 5px; color: #334f2b; border-radius: 8px; margin: 20px 0;">
+                    ${verificationCode}
                 </div>
-            `
-        };
+                <p style="font-size: 12px; color: #73796f;">Bu kod 10 dakika boyunca geçerlidir. Eğer bu başvuruyu siz yapmadıysanız lütfen bu e-postayı dikkate almayınız.</p>
+            </div>
+        `;
 
-        transporter.sendMail(mailOptions).catch(mailErr => {
-            console.error("[ARKA PLAN YENİDEN E-POSTA HATASI]:", mailErr.message);
+        apiInstance.sendTransacEmail(sendSmtpEmail).catch(err => {
+            console.error("[BREVO API HATASI]:", err.body || err.message);
         });
 
         verificationData.code = newCode;

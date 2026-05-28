@@ -30,40 +30,56 @@
         </div>
     </div>
 
-    <script>
+<script>
 window.onload = async function() {
 
-    // 🌟 YENİ SİSTEM KONTROLÜ: 
-    // Eski localStorage.getItem("user_data") yerine auth.js içindeki fonksiyonu çağırıyoruz.
+    // 1. ADIM: Önce tarayıcıda hızlıca lokal kullanıcı var mı diye bakıyoruz
     if (typeof getLocalUser !== 'function') {
-        console.error("auth.js yüklenemedi!");
+        console.error("auth.js yüklenemedi veya getLocalUser fonksiyonu eksik!");
         window.location.href = 'index.html';
         return;
     }
 
-    const user = getLocalUser();
+    let user = getLocalUser();
 
-    // Eğer auth.js aktif bir kullanıcı bulamazsa, güvenle index.html'e yönlendirir
+    // Eğer lokalde hiç veri yoksa doğrudan giriş sayfasına veya ana sayfaya şutla
     if (!user) {
+        console.log("Lokalde oturum bulunamadı, yönlendiriliyor...");
         window.location.href = 'index.html';
         return;
     }
 
-    // ✅ KENDİ PUANINI GÖSTER
+    // ✅ KENDİ PUANINI LOKALDEN HIZLICA EKRANA BAS (Kullanıcı bekletilmesin)
     document.getElementById('user-total-points').innerText =
         (user.points || 0).toLocaleString();
 
+    // 2. ADIM: Arka planda backend'e gidip token/cihaz parmak izi gerçekten geçerli mi doğrula
+    console.log("Oturum backend üzerinden doğrulanıyor...");
+    const verifiedUser = await verifySessionWithBackend();
+    
+    if (!verifiedUser) {
+        console.log("Oturum geçersiz veya cihaz uyuşmuyor! Güvenlik nedeniyle çıkış yapılıyor...");
+        window.location.href = 'index.html';
+        return;
+    }
+
+    // Eğer backend doğrulaması başarılıysa ve puan güncellendiyse ekranı tazele
+    user = verifiedUser;
+    document.getElementById('user-total-points').innerText =
+        (user.points || 0).toLocaleString();
+
+
+    // 3. ADIM: LEADERBOARD (LİDERLİK TABLOSU) VERİLERİNİ ÇEK
     const tbody = document.getElementById('leaderboard-body');
 
     try {
-        // ✅ BACKEND'DEN TÜM USERLARI ÇEK
         const res = await fetch("https://rethink-lhse.onrender.com/leaderboard?limit=10");
         const users = await res.json();
 
         tbody.innerHTML = "";
 
         users.forEach((u, index) => {
-            // Backend'den dönen veriye göre u.name veya u.displayName kontrolü
+            // Eşleşmeyi hem isimden hem de uid üzerinden garantiye alıyoruz
             const isMe = u.name === user.name || (user.uid && u.uid === user.uid);
 
             tbody.innerHTML += `

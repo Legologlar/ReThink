@@ -36,19 +36,10 @@ db.settings({
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(CLIENT_ID);
 
-// ─── NODEMAILER YAPILANDIRMASI (PORT 587 - TLS) ────────────────────
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,          // Engel ihtimali daha düşük olan TLS portu
-    secure: false,      // Port 587 olduğu için burası kesinlikle false olmalı
-    requireTLS: true,   // Bağlantıyı TLS güvenli katmanına zorla
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    },
-    connectionTimeout: 10000, // Sunucunun yanıt vermesi için 10 saniye süre tanı
-    socketTimeout: 10000
-});
+// ─── BREVO API YAPILANDIRMASI ─────────────────────────────────────
+const apiInstance = new Brevo.TransactionalEmailsApi();
+const apiKey = apiInstance.authentications['apiKey'];
+apiKey.apiKey = process.env.BREVO_API_KEY;
 
 const verificationStore = new Map(); 
 

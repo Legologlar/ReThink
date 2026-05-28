@@ -49,52 +49,65 @@
     </main>
 
 <script>
-window.addEventListener("load", async () => {
+window.onload = async function() {
 
-    // 🌟 KORUMA ÇÖZÜMÜ: Eski user_data yerine auth.js beynine soruyoruz
+    // 1. ADIM: dashboard.html'deki gibi fonksiyon kontrolü yapıyoruz
     if (typeof getLocalUser !== 'function') {
         console.error("auth.js yüklenemedi!");
-        window.location.href = "index.html";
+        window.location.href = 'index.html';
         return;
     }
 
     let user = getLocalUser();
 
+    // Eğer lokalde kullanıcı yoksa index'e postala
     if (!user) {
-        window.location.href = "index.html";
+        console.log("Lokalde oturum bulunamadı, yönlendiriliyor...");
+        window.location.href = 'index.html';
         return;
     }
 
+    // Elementleri yakala
     const nameInput = document.getElementById("info-name");
     const emailInput = document.getElementById("info-email");
     const pointsEl = document.getElementById("info-points");
     const avatarEl = document.getElementById("info-avatar");
 
-    // Bilgileri Form Alanlarına Dolduran Fonksiyon
+    // Form alanlarını dolduran render fonksiyonu
     function render(u) {
-        nameInput.value = u.name || "";
-        emailInput.value = u.email || "";
-        pointsEl.innerText = (u.points ?? 0).toLocaleString();
-        avatarEl.src = u.picture || u.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name || 'User')}`;
-    }
-
-    // İlk gösterim
-    render(user);
-
-    // Arka planda backend doğrulaması yap ve güncel puanı al
-    if (typeof verifySessionWithBackend === 'function') {
-        const verifiedUser = await verifySessionWithBackend();
-        if (verifiedUser) {
-            user = verifiedUser;
-            render(user);
+        if (nameInput) nameInput.value = u.name || "";
+        if (emailInput) emailInput.value = u.email || "";
+        if (pointsEl) pointsEl.innerText = (u.points ?? 0).toLocaleString();
+        if (avatarEl) {
+            avatarEl.src = u.picture || u.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name || 'User')}`;
         }
     }
-});
 
-// 🛠️ PROFİL BİLGİLERİNİ BACKEND'E KAYDEDEN YENİ FONKSİYON
+    // ✅ İlk yüklemede lokaldeki mevcut veriyi ekrana basıyoruz (dashboard'daki gibi hızlıca)
+    render(user);
+
+    // 2. ADIM: dashboard.html'deki gibi arka planda backend doğrulaması yapıyoruz
+    console.log("Oturum backend üzerinden doğrulanıyor...");
+    if (typeof verifySessionWithBackend === 'function') {
+        const verifiedUser = await verifySessionWithBackend();
+        
+        if (!verifiedUser) {
+            console.log("Oturum geçersiz! Çıkış yapılıyor...");
+            window.location.href = 'index.html';
+            return;
+        }
+
+        // Backend'den onay gelirse güncel veriyi değişkene atıp tekrar basıyoruz
+        user = verifiedUser;
+        render(user);
+    }
+}
+
+// 🛠️ PROFİL BİLGİLERİNİ BACKEND'E KAYDEDEN GÜNCELLEME MOTORU
 async function handleUpdateProfile(event) {
     event.preventDefault();
     
+    // Güncelleme yaparken de yine auth.js üzerinden güncel lokal veriyi çekiyoruz
     const user = getLocalUser();
     const newName = document.getElementById("info-name").value;
 
@@ -112,7 +125,7 @@ async function handleUpdateProfile(event) {
         if (!res.ok) throw new Error("Güncelleme başarısız oldu.");
         const updatedData = await res.json();
 
-        // Eğer backend başarılı döndüyse lokal hafızayı güncelle
+        // Backend başarılı döndüyse lokal hafızayı güncelle
         if (updatedData.user && typeof updateLocalUser === 'function') {
             updateLocalUser(updatedData.user);
             alert("Profil bilgileriniz başarıyla güncellendi! 🎉");

@@ -96,6 +96,70 @@ app.post('/auth/login', async (req, res) => {
     }
 });
 
+// =================================================================
+// 🌟 YENİ ENDPOINT: Bcrypt ile Şifreli Kayıt Olma Sistemi (kayit.html için)
+// =================================================================
+app.post('/auth/register', async (req, res) => {
+    const { fullName, email, password } = req.body;
+
+    if (!fullName || !email || !password) {
+        return res.status(400).json({ message: "Tüm alanların doldurulması zorunludur." });
+    }
+
+    try {
+        // 1. Kontrol: Bu e-posta adresiyle daha önce kayıt olunmuş mu?
+        const userCheck = await db.collection('users').where('email', '==', email).limit(1).get();
+        if (!userCheck.empty) {
+            return res.status(400).json({ message: "Bu e-posta adresi zaten kullanımda." });
+        }
+
+        // 2. GÜVENLİK ADIMI: Şifreyi tek yönlü hash'leme işleminden geçiriyoruz
+        // Şifreyi sunucuyu yöneten sen bile veritabanına baksan göremeyeceksin
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // 3. Benzersiz bir UID oluşturma (Firestore otomatik ID veya özel ID üretebilir)
+        const userRef = db.collection('users').doc(); // Boş bırakınca otomatik benzersiz döküman ID üretir
+        const uid = userRef.id;
+
+        const newUser = {
+            name: fullName,
+            email: email,
+            password: hashedPassword, // 🔒 Veritabanına düz metin değil, çözülemez hash gidiyor!
+            profilePic: `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=334f2b&color=fff`, // Default avatar
+            points: 0,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            lastLogin: admin.firestore.FieldValue.serverTimestamp()
+        };
+
+        // Veriyi Firestore'a yazıyoruz
+        await userRef.set(newUser);
+
+        // 4. Otomatik Oturum Açma: Kayıt biter bitmez kullanıcıya anında JWT token üretiyoruz
+        const deviceFingerprint = generateDeviceFingerprint(req);
+        const sessionToken = jwt.sign(
+            { uid: uid, fingerprint: deviceFingerprint },
+            JWT_SECRET,
+            { expiresIn: '14d', algorithm: 'HS256' }
+        );
+
+        res.status(201).json({
+            message: "Kullanıcı başarıyla oluşturuldu.",
+            token: sessionToken,
+            user: {
+                uid,
+                name: newUser.name,
+                email: newUser.email,
+                picture: newUser.profilePic,
+                points: newUser.points
+            }
+        });
+
+    } catch (error) {
+        console.error("KAYIT HATA:", error.message);
+        res.status(500).json({ message: "Sunucu hatası, kayıt yapılamadı." });
+    }
+});
+
 // GOOGLE AUTH ENDPOINT
 app.post('/auth/google', async (req, res) => {
     const { token } = req.body;

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+  <title>Giriş Yap - EcoCycle</title>
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "secondary-container": "#feae91",
+            "primary-container": "#4a6741",
+            "outline-variant": "#c3c8bd",
+            "on-secondary-fixed": "#380d00",
+            "error": "#ba1a1a",
+            "on-primary-container": "#c2e4b4",
+            "tertiary-fixed-dim": "#c9c6c0",
+            "on-surface-variant": "#434840",
+            "on-surface": "#1b1c1c",
+            "surface": "#fcf9f8",
+            "primary-fixed-dim": "#afd0a1",
+            "on-tertiary-container": "#dddad4",
+            "primary": "#334f2b",
+            "background": "#fcf9f8",
+            "surface-container-highest": "#e4e2e1",
+            "surface-tint": "#496640",
+            "on-secondary-container": "#793f29",
+            "on-primary-fixed-variant": "#324e2a",
+            "tertiary-container": "#61605b",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f6f3f2",
+            "on-error-container": "#93000a",
+            "tertiary-fixed": "#e5e2db",
+            "surface-container-high": "#eae7e7",
+            "on-secondary": "#ffffff",
+            "surface-bright": "#fcf9f8",
+            "tertiary": "#494843",
+            "on-background": "#1b1c1c",
+            "surface-container": "#f0eded",
+            "inverse-surface": "#303030",
+            "primary-fixed": "#caecbc",
+            "on-tertiary": "#ffffff",
+            "secondary-fixed-dim": "#ffb59b",
+            "on-primary": "#ffffff",
+            "on-tertiary-fixed-variant": "#474742",
+            "on-primary-fixed": "#062104",
+            "error-container": "#ffdad6",
+            "secondary": "#8c4e37",
+            "on-secondary-fixed-variant": "#6f3722",
+            "inverse-primary": "#afd0a1",
+            "outline": "#73796f",
+            "on-error": "#ffffff",
+            "inverse-on-surface": "#f3f0f0",
+            "surface-dim": "#dcd9d9",
+            "surface-variant": "#e4e2e1",
+            "on-tertiary-fixed": "#1c1c18",
+            "secondary-fixed": "#ffdbcf"
+          },
+
+          borderRadius: {
+            DEFAULT: "0.25rem",
+            lg: "0.5rem",
+            xl: "0.75rem",
+            full: "9999px"
+          },
+
+          spacing: {
+            "margin-desktop": "64px",
+            md: "16px",
+            xl: "40px",
+            base: "4px",
+            xs: "4px",
+            sm: "8px",
+            lg: "24px",
+            "margin-mobile": "20px",
+            gutter: "16px"
+          },
+
+          fontFamily: {
+            "headline-md": ["Inter"],
+            "label-md": ["Inter"],
+            "headline-xl-mobile": ["Inter"],
+            "headline-xl": ["Inter"],
+            "body-lg": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-lg": ["Inter"],
+            "label-sm": ["Inter"]
+          },
+
+          fontSize: {
+            "headline-md": [
+              "22px",
+              { lineHeight: "28px", fontWeight: "600" }
+            ],
+
+            "label-md": [
+              "14px",
+              {
+                lineHeight: "20px",
+                letterSpacing: "0.01em",
+                fontWeight: "500"
+              }
+            ],
+
+            "headline-xl-mobile": [
+              "32px",
+              {
+                lineHeight: "40px",
+                letterSpacing: "-0.02em",
+                fontWeight: "700"
+              }
+            ],
+
+            "headline-xl": [
+              "40px",
+              {
+                lineHeight: "48px",
+                letterSpacing: "-0.02em",
+                fontWeight: "700"
+              }
+            ],
+
+            "body-lg": [
+              "18px",
+              {
+                lineHeight: "28px",
+                fontWeight: "400"
+              }
+            ],
+
+            "body-md": [
+              "16px",
+              {
+                lineHeight: "24px",
+                fontWeight: "400"
+              }
+            ],
+
+            "headline-lg": [
+              "28px",
+              {
+                lineHeight: "36px",
+                letterSpacing: "-0.01em",
+                fontWeight: "600"
+              }
+            ],
+
+            "label-sm": [
+              "12px",
+              {
+                lineHeight: "16px",
+                letterSpacing: "0.05em",
+                fontWeight: "600"
+              }
+            ]
+          }
+        }
+      }
+    };
+  </script>
+
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+  <style>
+    body {
+      font-family: "Inter", sans-serif;
+      background-color: theme("colors.background");
+    }
+
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings:
+        "FILL" 0,
+        "wght" 400,
+        "GRAD" 0,
+        "opsz" 24;
+    }
+
+    input:focus {
+      box-shadow: 0 0 0 1px theme("colors.primary");
+    }
+  </style>
+</head>
+
+<body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col md:flex-row">
+
+  <div class="hidden md:flex md:w-1/2 relative bg-surface-container-highest overflow-hidden">
+
+    <img
+      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBnh2Vu2df0kNvFHs9ljK5AA95pQw0EDgOnrnNS3vrX4QI7zd5gCGgJx0VIoFSWKhgEOs3E0495o6XCxf2UNFQ1I8rJ_C60RdRy-DXWAOJr_VMYNS1Yryz2pWSf8dJUSrBhqlrhMqyP2HYGsSliEa6ugN0EuS3Mr9zgYGaOL4qXns4aqZ9tj85p_kbz0ECSdGDXQqyyOVZzORhLOqe8zxfemc4NGcLFO3bsZ2whSVDYht7NbOoUEKyYvqXMI9UlnekPd8Kph8dfYDC"
+      alt="A discarded clear plastic water bottle lying on a bed of green moss in a sun-drenched forest, symbolizing environmental awareness."
+      class="absolute inset-0 w-full h-full object-cover opacity-90 mix-blend-multiply"
+    />
+
+    <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+
+    <div class="absolute bottom-margin-desktop left-margin-desktop right-margin-desktop">
+      <h2 class="font-headline-lg text-headline-lg text-surface-container-lowest max-w-sm">
+        ReThink doğayı korumak için çalışan bir platformdur.
+      </h2>
+    </div>
+  </div>
+
+  <div class="w-full md:w-1/2 flex flex-col justify-center px-margin-mobile py-xl md:px-margin-desktop bg-surface relative min-h-screen">
+
+    <div class="absolute top-margin-mobile left-margin-mobile md:top-margin-desktop md:left-margin-desktop flex items-center gap-sm"></div>
+
+    <div class="w-full max-w-[440px] mx-auto mt-20 md:mt-0">
+
+      <div class="mb-xl">
+        <h1 class="font-headline-xl-mobile text-headline-xl-mobile md:font-headline-xl md:text-headline-xl text-on-surface mb-sm">
+          Giriş Yap
+        </h1>
+
+        <p class="font-body-md text-body-md text-on-surface-variant">
+          Daha temiz bir gelecek için ilk adımı atın.
+        </p>
+      </div>
+
+      <form id="loginForm" onsubmit="handleClassicLogin(event)" class="flex flex-col gap-lg">
+
+        <div class="flex flex-col gap-xs">
+
+          <label for="email" class="font-label-sm text-label-sm text-on-surface-variant">
+            E-posta Adresi
+          </label>
+
+          <div class="relative">
+
+            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-outline">
+              <span class="material-symbols-outlined text-[20px]">
+                mail
+              </span>
+            </span>
+
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              placeholder="ornek@eposta.com"
+              class="w-full bg-surface-container-lowest border border-outline-variant text-on-surface font-body-md text-body-md rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200 placeholder:text-outline-variant"
+            />
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-xs">
+
+          <label for="password" class="font-label-sm text-label-sm text-on-surface-variant">
+            Şifre
+          </label>
+
+          <div class="relative">
+
+            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-outline">
+              <span class="material-symbols-outlined text-[20px]">
+                lock
+              </span>
+            </span>
+
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              placeholder="••••••••"
+              class="w-full bg-surface-container-lowest border border-outline-variant text-on-surface font-body-md text-body-md rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200 placeholder:text-outline-variant"
+            />
+
+            <button
+              type="button"
+              onclick="togglePassword()"
+              class="absolute inset-y-0 right-0 flex items-center pr-4 text-outline hover:text-on-surface transition-colors"
+            >
+              <span id="visibilityIcon" class="material-symbols-outlined text-[20px]">
+                visibility
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="mt-sm w-full bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-label-md text-label-md py-4 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md flex justify-center items-center gap-2"
+        >
+          <span>Giriş Yap</span>
+
+          <span class="material-symbols-outlined text-[20px]">
+            arrow_forward
+          </span>
+        </button>
+
+        <div class="flex items-center gap-4 my-2">
+          <div class="flex-1 h-px bg-outline-variant"></div>
+
+          <span class="font-label-sm text-label-sm text-on-surface-variant uppercase">
+            veya
+          </span>
+
+          <div class="flex-1 h-px bg-outline-variant"></div>
+        </div>
+
+        <div class="flex flex-col gap-sm">
+
+          <div id="buttonDiv" class="w-full flex justify-center"></div>
+
+          <button
+            type="button"
+            onclick="handleMicrosoftLogin()"
+            class="w-full flex items-center justify-center gap-3 py-3 border border-outline-variant rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface"
+          >
+            <span class="material-symbols-outlined text-[20px]">
+              grid_view
+            </span>
+
+            Microsoft ile Giriş Yap
+          </button>
+        </div>
+      </form>
+
+      <div class="mt-xl text-center">
+        <p class="font-body-md text-body-md text-on-surface-variant">
+          Mevcut hesabınız yok mu?
+
+          <a
+            href="#"
+            class="font-label-md text-label-md text-primary font-bold hover:underline underline-offset-4 transition-all"
+          >
+            Kayıt Olun
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <script src="auth.js"></script>
+
+  <script src="script.js"></script>
+
+  <script>
+    // Göz ikonuna basınca şifreyi göster/gizle
+    function togglePassword() {
+      const passwordInput = document.getElementById("password");
+      const visibilityIcon = document.getElementById("visibilityIcon");
+
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        visibilityIcon.textContent = "visibility_off";
+      } else {
+        passwordInput.type = "password";
+        visibilityIcon.textContent = "visibility";
+      }
+    }
+
+    // --- Klasik E-posta / Şifre Formunu Backend'e Gönderen Fonksiyon ---
+    function handleClassicLogin(event) {
+      event.preventDefault(); // Sayfanın yenilenmesini engelle
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      console.log("Klasik giriş bilgileri gönderiliyor...");
+
+      fetch('https://rethink-lhse.onrender.com/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, password: password })
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("E-posta veya şifre hatalı.");
+        return res.json();
+      })
+      .then(data => {
+        if (data.token && data.user) {
+          console.log("Klasik giriş başarılı! Oturum açılıyor...");
+          
+          // auth.js merkezine güvenli kayıt atıyoruz
+          saveSession(data.token, data.user);
+          
+          // Giriş bitti, yönlendir
+          window.location.href = 'index.html';
+        }
+      })
+      .catch(err => {
+        console.error("Giriş Hatası:", err);
+        alert(err.message || "Giriş yapılamadı, lütfen bilgilerinizi kontrol edin.");
+      });
+    }
+
+    // --- Microsoft Giriş Tetikleyicisi (Geliştirmeye Hazır Altyapı) ---
+    function handleMicrosoftLogin() {
+      // İleride Microsoft API entegrasyonu yaptığında kodları buraya ekleyebilirsin
+      alert("Microsoft ile giriş altyapısı şu anda yapım aşamasındadır.");
+    }
+  </script>
+
+</body>
+</html>

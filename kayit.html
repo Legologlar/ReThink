@@ -3,25 +3,15 @@
 
 <head>
     <meta charset="utf-8" />
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Kayıt Ol - EcoCycle</title>
-
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
-
             theme: {
                 extend: {
-
                     colors: {
                         "secondary-container": "#feae91",
                         "primary-container": "#4a6741",
@@ -71,14 +61,12 @@
                         "on-tertiary-fixed": "#1c1c18",
                         "secondary-fixed": "#ffdbcf"
                     },
-
                     borderRadius: {
                         DEFAULT: "0.25rem",
                         lg: "0.5rem",
                         xl: "0.75rem",
                         full: "9999px"
                     },
-
                     spacing: {
                         "margin-desktop": "64px",
                         "md": "16px",
@@ -90,7 +78,6 @@
                         "margin-mobile": "20px",
                         "gutter": "16px"
                     },
-
                     fontFamily: {
                         "headline-md": ["Inter"],
                         "label-md": ["Inter"],
@@ -101,121 +88,35 @@
                         "headline-lg": ["Inter"],
                         "label-sm": ["Inter"]
                     },
-
                     fontSize: {
-                        "headline-md": [
-                            "22px",
-                            {
-                                lineHeight: "28px",
-                                fontWeight: "600"
-                            }
-                        ],
-
-                        "label-md": [
-                            "14px",
-                            {
-                                lineHeight: "20px",
-                                letterSpacing: "0.01em",
-                                fontWeight: "500"
-                            }
-                        ],
-
-                        "headline-xl-mobile": [
-                            "32px",
-                            {
-                                lineHeight: "40px",
-                                letterSpacing: "-0.02em",
-                                fontWeight: "700"
-                            }
-                        ],
-
-                        "headline-xl": [
-                            "40px",
-                            {
-                                lineHeight: "48px",
-                                letterSpacing: "-0.02em",
-                                fontWeight: "700"
-                            }
-                        ],
-
-                        "body-lg": [
-                            "18px",
-                            {
-                                lineHeight: "28px",
-                                fontWeight: "400"
-                            }
-                        ],
-
-                        "body-md": [
-                            "16px",
-                            {
-                                lineHeight: "24px",
-                                fontWeight: "400"
-                            }
-                        ],
-
-                        "headline-lg": [
-                            "28px",
-                            {
-                                lineHeight: "36px",
-                                letterSpacing: "-0.01em",
-                                fontWeight: "600"
-                            }
-                        ],
-
-                        "label-sm": [
-                            "12px",
-                            {
-                                lineHeight: "16px",
-                                letterSpacing: "0.05em",
-                                fontWeight: "600"
-                            }
-                        ]
+                        "headline-md": ["22px", { lineHeight: "28px", fontWeight: "600" }],
+                        "label-md": ["14px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "500" }],
+                        "headline-xl-mobile": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "headline-xl": ["40px", { lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+                        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+                        "headline-lg": ["28px", { lineHeight: "36px", letterSpacing: "-0.01em", fontWeight: "600" }],
+                        "label-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "600" }]
                     }
                 }
             }
         };
     </script>
-
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    />
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    />
-
-    <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-    />
-
-    <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-    />
-
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background-color: theme('colors.background');
         }
-
         ::-webkit-scrollbar {
             display: none;
         }
-
         .material-symbols-outlined {
-            font-variation-settings:
-                'FILL' 0,
-                'wght' 400,
-                'GRAD' 0,
-                'opsz' 24;
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
-
         input:focus {
             box-shadow: 0 0 0 1px theme('colors.primary');
         }
@@ -225,15 +126,8 @@
 <body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col md:flex-row">
 
     <div class="hidden md:flex md:w-1/2 relative bg-surface-container-highest overflow-hidden">
-
-        <img
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBnh2Vu2df0kNvFHs9ljK5AA95pQw0EDgOnrnNS3vrX4QI7zd5gCGgJx0VIoFSWKhgEOs3E0495o6XCxf2UNFQ1I8rJ_C60RdRy-DXWAOJr_VMYNS1Yryz2pWSf8dJUSrBhqlrhMqyP2HYGsSliEa6ugN0EuS3Mr9zgYGaOL4qXns4aqZ9tj85p_kbz0ECSdGDXQqyyOVZzORhLOqe8zxfemc4NGcLFO3bsZ2whSVDYht7NbOoUEKyYvqXMI9UlnekPd8Kph8dfYDC"
-            alt="A discarded clear plastic water bottle lying on a bed of green moss in a sun-drenched forest, symbolizing environmental awareness."
-            class="absolute inset-0 w-full h-full object-cover opacity-90 mix-blend-multiply"
-        />
-
+        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBnh2Vu2df0kNvFHs9ljK5AA95pQw0EDgOnrnNS3vrX4QI7zd5gCGgJx0VIoFSWKhgEOs3E0495o6XCxf2UNFQ1I8rJ_C60RdRy-DXWAOJr_VMYNS1Yryz2pWSf8dJUSrBhqlrhMqyP2HYGsSliEa6ugN0EuS3Mr9zgYGaOL4qXns4aqZ9tj85p_kbz0ECSdGDXQqyyOVZzORhLOqe8zxfemc4NGcLFO3bsZ2whSVDYht7NbOoUEKyYvqXMI9UlnekPd8Kph8dfYDC" alt="A discarded clear plastic water bottle lying on a bed of green moss in a sun-drenched forest, symbolizing environmental awareness." class="absolute inset-0 w-full h-full object-cover opacity-90 mix-blend-multiply" />
         <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
-
         <div class="absolute bottom-margin-desktop left-margin-desktop right-margin-desktop">
             <h2 class="font-headline-lg text-headline-lg text-surface-container-lowest max-w-sm">
                 ReThink doğayı korumak için çalışan bir platformdur.
@@ -242,177 +136,117 @@
     </div>
 
     <div class="w-full md:w-1/2 flex flex-col justify-center px-margin-mobile py-xl md:px-margin-desktop bg-surface relative min-h-screen">
-
         <div class="absolute top-margin-mobile left-margin-mobile md:top-margin-desktop md:left-margin-desktop flex items-center gap-sm"></div>
 
         <div class="w-full max-w-[440px] mx-auto mt-20 md:mt-0">
 
-            <div class="mb-xl">
-
-                <h1 class="font-headline-xl-mobile text-headline-xl-mobile md:font-headline-xl md:text-headline-xl text-on-surface mb-sm">
-                    Hesap Oluştur
-                </h1>
-
-                <p class="font-body-md text-body-md text-on-surface-variant">
-                    Daha temiz bir gelecek için ilk adımı atın.
-                </p>
-            </div>
-
-            <form
-                action="#"
-                method="POST"
-                class="flex flex-col gap-lg"
-            >
-
-                <div class="flex flex-col gap-xs">
-
-                    <label
-                        for="fullName"
-                        class="font-label-sm text-label-sm text-on-surface-variant"
-                    >
-                        Ad Soyad
-                    </label>
-
-                    <div class="relative">
-
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-outline">
-                            <span class="material-symbols-outlined text-[20px]">
-                                person
-                            </span>
-                        </span>
-
-                        <input
-                            id="fullName"
-                            name="fullName"
-                            type="text"
-                            required
-                            placeholder="Örn: Doğa Yılmaz"
-                            class="w-full bg-surface-container-lowest border border-outline-variant text-on-surface font-body-md text-body-md rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200 placeholder:text-outline-variant"
-                        />
-                    </div>
+            <div id="registerStep">
+                <div class="mb-xl">
+                    <h1 class="font-headline-xl-mobile text-headline-xl-mobile md:font-headline-xl md:text-headline-xl text-on-surface mb-sm">
+                        Hesap Oluştur
+                    </h1>
+                    <p class="font-body-md text-body-md text-on-surface-variant">
+                        Daha temiz bir gelecek için ilk adımı atın.
+                    </p>
                 </div>
 
-                <div class="flex flex-col gap-xs">
-
-                    <label
-                        for="email"
-                        class="font-label-sm text-label-sm text-on-surface-variant"
-                    >
-                        E-posta Adresi
-                    </label>
-
-                    <div class="relative">
-
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-outline">
-                            <span class="material-symbols-outlined text-[20px]">
-                                mail
+                <form onsubmit="handleClassicRegister(event)" class="flex flex-col gap-lg">
+                    <div class="flex flex-col gap-xs">
+                        <label for="fullName" class="font-label-sm text-label-sm text-on-surface-variant">Ad Soyad</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-outline">
+                                <span class="material-symbols-outlined text-[20px]">person</span>
                             </span>
-                        </span>
-
-                        <input
-                            id="email"
-                            name="email"
-                            type="email"
-                            required
-                            placeholder="ornek@eposta.com"
-                            class="w-full bg-surface-container-lowest border border-outline-variant text-on-surface font-body-md text-body-md rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200 placeholder:text-outline-variant"
-                        />
+                            <input id="fullName" type="text" required placeholder="Örn: Doğa Yılmaz" class="w-full bg-surface-container-lowest border border-outline-variant text-on-surface font-body-md text-body-md rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200 placeholder:text-outline-variant" />
+                        </div>
                     </div>
-                </div>
 
-                <div class="flex flex-col gap-xs">
-
-                    <label
-                        for="password"
-                        class="font-label-sm text-label-sm text-on-surface-variant"
-                    >
-                        Şifre
-                    </label>
-
-                    <div class="relative">
-
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-outline">
-                            <span class="material-symbols-outlined text-[20px]">
-                                lock
+                    <div class="flex flex-col gap-xs">
+                        <label for="email" class="font-label-sm text-label-sm text-on-surface-variant">E-posta Adresi</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-outline">
+                                <span class="material-symbols-outlined text-[20px]">mail</span>
                             </span>
-                        </span>
+                            <input id="email" type="email" required placeholder="ornek@eposta.com" class="w-full bg-surface-container-lowest border border-outline-variant text-on-surface font-body-md text-body-md rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200 placeholder:text-outline-variant" />
+                        </div>
+                    </div>
 
-                        <input
-                            id="password"
-                            name="password"
-                            type="password"
-                            required
-                            placeholder="••••••••"
-                            class="w-full bg-surface-container-lowest border border-outline-variant text-on-surface font-body-md text-body-md rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200 placeholder:text-outline-variant"
-                        />
-
-                        <button
-                            type="button"
-                            onclick="togglePassword()"
-                            class="absolute inset-y-0 right-0 flex items-center pr-4 text-outline hover:text-on-surface transition-colors"
-                        >
-                            <span
-                                id="visibilityIcon"
-                                class="material-symbols-outlined text-[20px]"
-                            >
-                                visibility
+                    <div class="flex flex-col gap-xs">
+                        <label for="password" class="font-label-sm text-label-sm text-on-surface-variant">Şifre</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-outline">
+                                <span class="material-symbols-outlined text-[20px]">lock</span>
                             </span>
+                            <input id="password" type="password" required placeholder="••••••••" class="w-full bg-surface-container-lowest border border-outline-variant text-on-surface font-body-md text-body-md rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200 placeholder:text-outline-variant" />
+                            <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 flex items-center pr-4 text-outline hover:text-on-surface transition-colors">
+                                <span id="visibilityIcon" class="material-symbols-outlined text-[20px]">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="mt-sm w-full bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-label-md text-label-md py-4 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md flex justify-center items-center gap-2">
+                        <span>Kayıt Ol</span>
+                        <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+                    </button>
+
+                    <div class="flex items-center gap-4 my-2">
+                        <div class="flex-1 h-px bg-outline-variant"></div>
+                        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase">veya</span>
+                        <div class="flex-1 h-px bg-outline-variant"></div>
+                    </div>
+
+                    <div class="flex flex-col gap-sm">
+                        <div id="buttonDiv" class="w-full flex justify-center"></div>
+                        <button type="button" onclick="alert('Microsoft ile giriş yakında aktif edilecektir.')" class="w-full flex items-center justify-center gap-3 py-3 border border-outline-variant rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface">
+                            <span class="material-symbols-outlined text-[20px]">grid_view</span>
+                            Microsoft ile Kayıt Ol
                         </button>
                     </div>
+                </form>
+
+                <div class="mt-xl text-center">
+                    <p class="font-body-md text-body-md text-on-surface-variant">
+                        Zaten hesabınız var mı?
+                        <a href="giris.html" class="font-label-md text-label-md text-primary font-bold hover:underline underline-offset-4 transition-all">Giriş yapın</a>
+                    </p>
                 </div>
-
-                <button
-                    type="submit"
-                    class="mt-sm w-full bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-label-md text-label-md py-4 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md flex justify-center items-center gap-2"
-                >
-                    <span>Kayıt Ol</span>
-
-                    <span class="material-symbols-outlined text-[20px]">
-                        arrow_forward
-                    </span>
-                </button>
-
-                <div class="flex items-center gap-4 my-2">
-
-                    <div class="flex-1 h-px bg-outline-variant"></div>
-
-                    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase">
-                        veya
-                    </span>
-
-                    <div class="flex-1 h-px bg-outline-variant"></div>
-                </div>
-
-                <div class="flex flex-col gap-sm">
-
-                    <div id="buttonDiv" class="w-full flex justify-center"></div>
-
-                    <button
-                        type="button"
-                        class="w-full flex items-center justify-center gap-3 py-3 border border-outline-variant rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface"
-                    >
-                        <span class="material-symbols-outlined text-[20px]">
-                            grid_view
-                        </span>
-
-                        Microsoft ile Kayıt Ol
-                    </button>
-                </div>
-            </form>
-
-            <div class="mt-xl text-center">
-
-                <p class="font-body-md text-body-md text-on-surface-variant">
-                    Zaten hesabınız var mı?
-
-                    <a
-                        href="giris.html"
-                        class="font-label-md text-label-md text-primary font-bold hover:underline underline-offset-4 transition-all"
-                    >
-                        Giriş yapın
-                    </a>
-                </p>
             </div>
+
+            <div id="verificationStep" style="display: none;">
+                <div class="mb-xl">
+                    <h1 class="font-headline-xl-mobile text-headline-xl-mobile md:font-headline-xl md:text-headline-xl text-on-surface mb-sm">
+                        Kodu Doğrula
+                    </h1>
+                    <p id="verificationMessage" class="font-body-md text-body-md text-on-surface-variant">
+                        Lütfen e-posta adresinize gönderilen 6 haneli kodu girin.
+                    </p>
+                </div>
+
+                <form onsubmit="handleVerifyCode(event)" class="flex flex-col gap-lg">
+                    <div class="flex flex-col gap-xs">
+                        <label for="authCode" class="font-label-sm text-label-sm text-on-surface-variant">Doğrulama Kodu</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-outline">
+                                <span class="material-symbols-outlined text-[20px]">verified_user</span>
+                            </span>
+                            <input id="authCode" type="text" maxlength="6" required placeholder="000000" class="w-full bg-surface-container-lowest border border-outline-variant text-on-surface font-body-md text-body-md rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200 tracking-[0.5em] text-center font-bold placeholder:tracking-normal placeholder:font-normal placeholder:text-outline-variant" />
+                        </div>
+                    </div>
+
+                    <button type="submit" class="mt-sm w-full bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-label-md text-label-md py-4 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md flex justify-center items-center gap-2">
+                        <span>Hesabı Aktive Et</span>
+                        <span class="material-symbols-outlined text-[20px]">check_circle</span>
+                    </button>
+                </form>
+
+                <div class="mt-xl text-center">
+                    <p class="font-body-md text-body-md text-on-surface-variant">
+                        Kod gelmedi mi? 
+                        <button type="button" onclick="resendCode()" class="font-label-md text-label-md text-primary font-bold hover:underline underline-offset-4 transition-all">Yeniden Gönder</button>
+                    </p>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -420,27 +254,104 @@
     <script src="script.js"></script>
 
     <script>
+        let registeredEmail = ""; // Kod doğrulama adımında kullanılmak üzere e-postayı saklar
+
         function togglePassword() {
-
-            const passwordInput =
-                document.getElementById('password');
-
-            const visibilityIcon =
-                document.getElementById('visibilityIcon');
-
+            const passwordInput = document.getElementById('password');
+            const visibilityIcon = document.getElementById('visibilityIcon');
             if (passwordInput.type === 'password') {
-
                 passwordInput.type = 'text';
                 visibilityIcon.textContent = 'visibility_off';
-
             } else {
-
                 passwordInput.type = 'password';
                 visibilityIcon.textContent = 'visibility';
             }
         }
-    </script>
 
+        // --- KLASİK KAYIT İŞLEMİ (1. ADIM) ---
+        function handleClassicRegister(event) {
+            event.preventDefault();
+            
+            const fullName = document.getElementById("fullName").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            
+            registeredEmail = email; // E-postayı hafızaya al
+
+            console.log("Kayıt verileri backend'e gönderiliyor...");
+
+            fetch('https://rethink-lhse.onrender.com/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fullName, email, password })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Kayıt işlemi başarısız. Bu e-posta zaten kullanımda olabilir.");
+                return res.json();
+            })
+            .then(data => {
+                console.log("Kayıt başarılı, doğrulama kodu gönderildi.");
+                document.getElementById("verificationMessage").innerText = `${registeredEmail} adresine gönderilen 6 haneli kodu girin.`;
+                // Görünümü değiştir
+                document.getElementById("registerStep").style.display = "none";
+                document.getElementById("verificationStep").style.display = "block";
+            })
+            .catch(err => {
+                console.error("Kayıt Hatası:", err);
+                alert(err.message || "Kayıt gerçekleştirilemedi.");
+            });
+        }
+
+        // --- KOD DOĞRULAMA İŞLEMİ (2. ADIM) ---
+        function handleVerifyCode(event) {
+            event.preventDefault();
+            
+            const code = document.getElementById("authCode").value;
+
+            console.log("Kod doğrulanıyor...");
+
+            fetch('https://rethink-lhse.onrender.com/auth/verify-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: registeredEmail, code: code })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Geçersiz veya süresi dolmuş doğrulama kodu.");
+                return res.json();
+            })
+            .then(data => {
+                if (data.token && data.user) {
+                    console.log("Doğrulama başarılı. Oturum açılıyor...");
+                    saveSession(data.token, data.user); // auth.js içindeki fonksiyon
+                    window.location.href = 'index.html';
+                } else {
+                    throw new Error("Oturum verileri eksik döndü.");
+                }
+            })
+            .catch(err => {
+                console.error("Doğrulama Hatası:", err);
+                alert(err.message || "Kod doğrulanamadı.");
+            });
+        }
+
+        // --- KODU YENİDEN GÖNDERME FONKSİYONU ---
+        function resendCode() {
+            console.log("Kod yeniden gönderiliyor...");
+            fetch('https://rethink-lhse.onrender.com/auth/resend-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: registeredEmail })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Kod yeniden gönderilemedi.");
+                alert("Doğrulama kodu e-postanıza tekrar gönderildi.");
+            })
+            .catch(err => {
+                console.error("Yeniden Gönderim Hatası:", err);
+                alert(err.message);
+            });
+        }
+    </script>
 </body>
 
 </html>

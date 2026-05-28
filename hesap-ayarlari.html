@@ -3,94 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hesap Bilgileri | ReThink</title>
+    <title>Hesap Ayarları | ReThink</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <script src="auth.js"></script>
-
+    <script src="script.js"></script>
     <script src="navbar.js"></script>
     
-    <main class="hero" style="background: var(--light-green);">
-        <div class="account-card" style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 90%; max-width: 500px;">
-            <h2 style="margin-bottom: 25px; color: var(--text-dark);">Profil Bilgileriniz</h2>
+    <main class="hero" style="background: var(--light-green); min-h: screen; padding: 40px 0;">
+        <div class="account-card" style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 90%; max-width: 550px; margin: 0 auto; text-align: center;">
+            
+            <h2 style="margin-bottom: 10px; color: var(--text-dark); font-weight: 700;">Hesap Ayarları</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px;">Profil bilgilerinizi yönetin ve güncel tutun.</p>
 
-            <div style="margin-bottom: 20px;">
-                <img id="info-avatar" src="https://ui-avatars.com/api/?name=User&background=2ecc71&color=fff" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary-green);">
+            <div style="position: relative; display: inline-block; margin-bottom: 30px;">
+                <img id="info-avatar" src="https://ui-avatars.com/api/?name=User&background=2ecc71&color=fff" style="width: 110px; height: 110px; border-radius: 50%; border: 4px solid var(--primary-green); object-cover;">
             </div>
 
-            <div style="text-align: left; margin-top: 20px;">
-                <div style="margin-bottom: 15px;">
-                    <label style="color: var(--text-muted); font-size: 0.8rem; display: block;">AD SOYAD</label>
-                    <p id="info-name" style="font-weight: 600; font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">Yükleniyor...</p>
+            <form id="settingsForm" onsubmit="handleUpdateProfile(event)" style="text-align: left;">
+                
+                <div style="background: #f4f9f4; padding: 15px; border-radius: 12px; margin-bottom: 25px; display: flex; justify-content: space-between; items-center;">
+                    <span style="font-weight: 600; color: var(--text-dark);">Mevcut Bakiyeniz:</span>
+                    <span style="font-weight: 700; color: var(--primary-green);"><span id="info-points">0</span> Re-Puan</span>
                 </div>
 
-                <div style="margin-bottom: 25px;">
-                    <label style="color: var(--text-muted); font-size: 0.8rem; display: block;">E-POSTA ADRESİ</label>
-                    <p id="info-email" style="font-weight: 600; font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">Yükleniyor...</p>
+                <div style="margin-bottom: 20px;">
+                    <label style="color: var(--text-dark); font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 8px;">AD SOYAD</label>
+                    <input type="text" id="info-name" required style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-family: 'Poppins'; font-size: 0.95rem; box-sizing: border-box;">
                 </div>
-                <div style="margin-bottom: 25px;">
-                    <label style="color: var(--text-muted); font-size: 0.8rem; display: block;">PUAN</label>
-                    <p id="info-points" style="font-weight: 600; font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">Yükleniyor...</p>
-                </div>
-            </div>
 
-            <button onclick="history.back()" class="cta-btn" style="width: 100%; margin-top: 10px;">Geri Dön</button>
+                <div style="margin-bottom: 25px; opacity: 0.7;">
+                    <label style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 8px;">E-POSTA ADRESİ (Değiştirilemez)</label>
+                    <input type="email" id="info-email" disabled style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-family: 'Poppins'; font-size: 0.95rem; background: #f8fafc; cursor: not-allowed; box-sizing: border-box;">
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-top: 30px;">
+                    <button type="button" onclick="history.back()" class="cta-btn" style="flex: 1; background: #edf2f7; color: #4a5568;">Geri Dön</button>
+                    <button type="submit" class="cta-btn" style="flex: 2; background: var(--primary-green); color: white;">Değişiklikleri Kaydet</button>
+                </div>
+
+            </form>
         </div>
     </main>
 
-<script src="../script.js"></script>
-
 <script>
-window.addEventListener("load", () => {
+window.addEventListener("load", async () => {
 
-    let user = JSON.parse(localStorage.getItem("user_data"));
+    // 🌟 KORUMA ÇÖZÜMÜ: Eski user_data yerine auth.js beynine soruyoruz
+    if (typeof getLocalUser !== 'function') {
+        console.error("auth.js yüklenemedi!");
+        window.location.href = "index.html";
+        return;
+    }
+
+    let user = getLocalUser();
 
     if (!user) {
         window.location.href = "index.html";
         return;
     }
 
-    const nameEl = document.getElementById("info-name");
-    const emailEl = document.getElementById("info-email");
+    const nameInput = document.getElementById("info-name");
+    const emailInput = document.getElementById("info-email");
     const pointsEl = document.getElementById("info-points");
     const avatarEl = document.getElementById("info-avatar");
 
+    // Bilgileri Form Alanlarına Dolduran Fonksiyon
     function render(u) {
-        nameEl.innerText = u.name || "Yok";
-        emailEl.innerText = u.email || "Yok";
-        pointsEl.innerText = u.points ?? 0;
-
-        avatarEl.src = u.picture || 
-            `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}`;
+        nameInput.value = u.name || "";
+        emailInput.value = u.email || "";
+        pointsEl.innerText = (u.points ?? 0).toLocaleString();
+        avatarEl.src = u.picture || u.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name || 'User')}`;
     }
 
-    // İlk yükleme (local)
+    // İlk gösterim
     render(user);
 
-    // Backend’den çek
-    function fetchUser() {
-        fetch(`https://rethink-lhse.onrender.com/user/${user.uid}`)
-            .then(res => res.json())
-            .then(data => {
-                if (!data) return;
-
-                user = data;
-
-                localStorage.setItem("user_data", JSON.stringify(data));
-                render(data);
-            })
-            .catch(err => console.error("Fetch hata:", err));
+    // Arka planda backend doğrulaması yap ve güncel puanı al
+    if (typeof verifySessionWithBackend === 'function') {
+        const verifiedUser = await verifySessionWithBackend();
+        if (verifiedUser) {
+            user = verifiedUser;
+            render(user);
+        }
     }
-
-    // İlk fetch
-    fetchUser();
-
-    // 🔁 Her 5 saniye güncelle
-    setInterval(fetchUser, 5000);
-
 });
+
+// 🛠️ PROFİL BİLGİLERİNİ BACKEND'E KAYDEDEN YENİ FONKSİYON
+async function handleUpdateProfile(event) {
+    event.preventDefault();
+    
+    const user = getLocalUser();
+    const newName = document.getElementById("info-name").value;
+
+    try {
+        console.log("Profil güncelleniyor...");
+        const res = await fetch(`https://rethink-lhse.onrender.com/user/update`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('rethink_token')}`
+            },
+            body: JSON.stringify({ uid: user.uid, name: newName })
+        });
+
+        if (!res.ok) throw new Error("Güncelleme başarısız oldu.");
+        const updatedData = await res.json();
+
+        // Eğer backend başarılı döndüyse lokal hafızayı güncelle
+        if (updatedData.user && typeof updateLocalUser === 'function') {
+            updateLocalUser(updatedData.user);
+            alert("Profil bilgileriniz başarıyla güncellendi! 🎉");
+        }
+    } catch (err) {
+        console.error("Profil güncellenirken hata:", err);
+        alert("Ayarlar kaydedilirken bir hata oluştu.");
+    }
+}
 </script>
 
 </body>

@@ -3,10 +3,15 @@ const admin = require('firebase-admin');
 const express = require('express');
 const cors = require('cors');
 const { OAuth2Client } = require('google-auth-library');
+const jwt = require('jsonwebtoken'); // JWT işlemleri için eklendi
+const crypto = require('crypto');     // Cihaz fingerprint hash'i için eklendi
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// JWT için Güvenli Gizli Anahtar (Environment değişkeninden okunur)
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Firebase Admin
 const serviceAccount = {
@@ -25,7 +30,14 @@ const db = admin.firestore();
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(CLIENT_ID);
 
-// AUTH ENDPOINT
+// --- YARDIMCI FONKSİYON: Cihaz Kimliği (Fingerprint) Üretici ---
+function generateDeviceFingerprint(req) {
+    const userAgent = req.headers['user-agent'] || 'unknown-device';
+    // User-Agent verisini SHA-256 ile kısa ve benzersiz bir hash'e dönüştürüyoruz
+    return crypto.createHash('sha256').update(userAgent).digest('hex');
+}
+
+// GOOGLE AUTH ENDPOINT
 app.post('/auth/google', async (req, res) => {
     const { token } = req.body;
 
@@ -80,8 +92,20 @@ app.post('/auth/google', async (req, res) => {
         const updatedDoc = await userRef.get();
         const userData = updatedDoc.data();
 
+        // --- STRATEJİ A: Cihaz Fingerprint ve 2 Haftalık JWT Üretimi ---
+        const deviceFingerprint = generateDeviceFingerprint(req);
+
+        // JWT içerisine uid ve cihaz parmak izini mühürlüyoruz
+        const sessionToken = jwt.sign(
+            { uid: uid, fingerprint: deviceFingerprint },
+            JWT_SECRET,
+            { expiresIn: '14d', algorithm: 'HS256' } // 2 hafta geçerli ve algoritma zorunlu (None önlemi)
+        );
+
+        // Başarılı girişte üretilen özel sessionToken'ı ön yüze teslim ediyoruz
         res.status(200).send({
             message: "Giriş başarılı",
+            token: sessionToken,
             user: {
                 uid,
                 name: userData.name,
@@ -98,6 +122,53 @@ app.post('/auth/google', async (req, res) => {
             message: "Doğrulama başarısız",
             error: error.message
         });
+    }
+});
+
+// --- YENİ ENDPOINT: Navbar.js için Token ve Cihaz Doğrulama Alanı ---
+app.post('/auth/verify', async (req, res) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; // 'Bearer TOKEN' yapısından ayıklama
+
+    if (!token) {
+        return res.status(401).json({ message: "Oturum tokenı bulunamadı" });
+    }
+
+    try {
+        // 1. Kontrol: İmza ve Algoritma Kontrolü (None algoritması engellenmiştir)
+        const decoded = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] });
+
+        // 2. Kontrol: İstekteki güncel User-Agent ile token içindeki cihazın kıyaslanması
+        const currentFingerprint = generateDeviceFingerprint(req);
+        
+        if (decoded.fingerprint !== currentFingerprint) {
+            console.log("Cihaz uyuşmazlığı engellendi!");
+            return res.status(401).json({ message: "Bu oturum başka bir cihaza ait, erişim reddedildi." });
+        }
+
+        // Cihaz ve imza geçerliyse kullanıcının Firestore'daki en güncel verilerini çekiyoruz
+        const userRef = db.collection("users").doc(decoded.uid);
+        const doc = await userRef.get();
+
+        if (!doc.exists) {
+            return res.status(404).json({ message: "Kullanıcı veritabanında bulunamadı" });
+        }
+
+        const user = doc.data();
+        res.json({
+            valid: true,
+            user: {
+                uid: decoded.uid,
+                name: user.name,
+                email: user.email,
+                picture: user.profilePic,
+                points: user.points || 0
+            }
+        });
+
+    } catch (err) {
+        console.error("Token Doğrulama Hatası:", err.message);
+        return res.status(401).json({ message: "Geçersiz veya süresi dolmuş token" });
     }
 });
 

@@ -1,107 +1,84 @@
+// script.js - Giriş ve Profil Yönetim Merkezi
+
+/**
+ * Google Giriş Başarılı Olduğunda Tetiklenen Fonksiyon
+ * Google'dan gelen şifreli token'ı alır ve Render backend'e gönderir.
+ */
 function handleCredentialResponse(response) {
-    console.log("Token alındı, doğrulanıyor...");
+    console.log("Google Token alındı, doğrulanıyor...");
 
     fetch('https://rethink-lhse.onrender.com/auth/google', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: response.credential })
     })
-    .then(res => res.json())
+    .then(res => {
+        if (!res.ok) throw new Error("Backend doğrulama hatası");
+        return res.json();
+    })
     .then(data => {
-        if (data.user) {
-            // Kullanıcıyı kaydet
-            localStorage.setItem("user_data", JSON.stringify(data.user));
+        if (data.token && data.user) {
+            console.log("Giriş başarılı! Oturum kaydediliyor...");
+            
+            // ÇAKIŞMA ÇÖZÜMÜ: Eski localStorage yerine yeni auth.js beynini tetikliyoruz
+            saveSession(data.token, data.user);
 
-            // UI güncelle
-            updateUI(data.user);
+            // Kullanıcıyı ana sayfaya yönlendiriyoruz, navbar orada otomatik yüklenecek
+            window.location.href = 'index.html';
         }
     })
     .catch(err => console.error("Backend Hatası:", err));
 }
 
-function updateUI(user) {
-
-    const buttonDiv = document.getElementById("buttonDiv");
-    if (buttonDiv) buttonDiv.style.display = "none";
-
-    const profile = document.getElementById("user-profile");
-    if (profile) {
-        profile.classList.remove("hidden");
-        profile.style.display = "flex";
-    }
-
-    const nameEl = document.getElementById("user-name");
-    if (nameEl) nameEl.innerText = user.name || "Kullanıcı";
-
-    const userImg = user.picture || user.photo || 
-        `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || "User")}`;
-
-    const avatarEl = document.getElementById("user-avatar");
-    if (avatarEl) avatarEl.src = userImg;
-}
-
-function logout() {
-    localStorage.removeItem('user_data');
-
-    const profile = document.getElementById("user-profile");
-    if (profile) profile.classList.add("hidden");
-
-    const buttonDiv = document.getElementById("buttonDiv");
-    if (buttonDiv) buttonDiv.style.display = "block";
-
-    window.location.href = 'index.html';
-}
-
+/**
+ * Sayfa Yüklendiğinde Google Butonunu Başlatan Mekanizma
+ */
 window.addEventListener("load", () => {
+    // Eğer giris.html sayfasındaysak ve buttonDiv varsa Google butonunu oluştur
+    const buttonDiv = document.getElementById("buttonDiv");
+    
+    if (buttonDiv && typeof google !== 'undefined') {
+        google.accounts.id.initialize({
+            client_id: "893805639538-gu30br0e9vvbgbfvk5g0vv35pe3t1tu9.apps.googleusercontent.com",
+            callback: handleCredentialResponse
+        });
 
-    google.accounts.id.initialize({
-        client_id: "893805639538-gu30br0e9vvbgbfvk5g0vv35pe3t1tu9.apps.googleusercontent.com",
-        callback: handleCredentialResponse
-    });
-
-    google.accounts.id.renderButton(
-        document.getElementById("buttonDiv"),
-        { 
-            theme: "filled_blue", 
-            size: "large", 
-            shape: "pill",
-            text: "continue_with"
-        } 
-    );
-
-    // Local storage varsa direkt UI yükle
-    const savedUser = localStorage.getItem('user_data');
-
-    if (savedUser) {
-        try {
-            updateUI(JSON.parse(savedUser));
-        } catch (e) {
-            localStorage.removeItem("user_data");
-        }
+        google.accounts.id.renderButton(
+            buttonDiv,
+            { 
+                theme: "outline", 
+                size: "large", 
+                shape: "pill",
+                text: "continue_with",
+                width: "440" // Form genişliğiyle tam uyumlu
+            } 
+        );
     }
 });
 
-const profile = document.getElementById("user-profile");
-
-if (profile) {
-    profile.addEventListener("click", () => {
-        profile.classList.toggle("open");
-    });
-}
-
-function refreshUserPoints() {
-    const user = JSON.parse(localStorage.getItem("user_data"));
-    if (!user) return;
+/**
+ * Kullanıcı Puanını Arka Planda Güncel Tutan Fonksiyon
+ */
+async function refreshUserPoints() {
+    // auth.js üzerinden aktif ve doğrulanmış kullanıcı verisini alıyoruz
+    // Eğer kullanıcı giriş yapmadıysa fonksiyon burada durur, backend'i boşuna yormaz
+    if (typeof getLocalUser !== 'function') return;
+    const user = getLocalUser();
+    if (!user || !user.uid) return;
 
     fetch(`https://rethink-lhse.onrender.com/user/${user.uid}`)
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) throw new Error("Puan güncellenemedi");
+            return res.json();
+        })
         .then(data => {
-            if (data) {
-                localStorage.setItem("user_data", JSON.stringify(data));
-                updateUI(data);
+            if (data && typeof updateLocalUser === 'function') {
+                // auth.js içindeki veriyi günceller, böylece navbar anlık yeni puanı gösterir
+                updateLocalUser(data);
             }
         })
-        .catch(err => console.error(err));
+        .catch(err => console.error("Puan güncellenirken hata:", err));
 }
 
-setInterval(refreshUserPoints, 5000); // 5 saniyede bir günceller
+// Puan güncelleme döngüsünü başlat (Sadece giriş yapılmışsa anlamlı çalışır)
+setInterval(refreshUserPoints, 5000);
